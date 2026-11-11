@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대상자별 맞춤숲 해설 프로그램</title>
+<style>
+    body { font-family:'Malgun Gothic',sans-serif; line-height:1.6; margin:0; background:#f9f9f9; color:#333; }
+    header { background:#1b5e20; color:white; text-align:center; padding:1.2rem; }
+    header h1 { margin:0; font-size:1.3rem; }
+    .container { padding:15px; max-width:800px; margin:auto; }
+    .card { background:white; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+    label { font-weight:bold; color:#1b5e20; display:block; margin:15px 0 5px; }
+    select { width:100%; padding:12px; font-size:1rem; border:1px solid #ccc; border-radius:8px; box-sizing:border-box; }
+    .main-btn { width:100%; padding:15px; margin-top:20px; background:#1b5e20; color:white; border:none; border-radius:8px; font-size:1.1rem; font-weight:bold; cursor:pointer; }
+    .badge { display:inline-block; background:#e8f5e9; color:#1b5e20; padding:3px 10px; border-radius:20px; font-weight:bold; margin-bottom:10px; }
+    .safety-box { background:#fff3f3; border:2px solid #d32f2f; border-radius:8px; padding:15px; margin-bottom:15px; }
+    .safety-box h4 { color:#d32f2f; margin:0 0 8px 0; }
+    .rainy-box { background:#e1f5fe; border-left:5px solid #0277bd; padding:15px; margin-top:15px; border-radius:4px; }
+    .section-title { font-weight:bold; color:#1b5e20; border-bottom:2px solid #e8f5e9; padding-bottom:5px; margin-top:18px; }
+    .back-btn { width:100%; background:#666; color:white; margin-top:15px; border:none; padding:12px; border-radius:8px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<header><h1>🌳 대상자별 맞춤숲 해설 프로그램</h1></header>
+
+<div class="container">
+    <div id="select-screen" class="card">
+        <label for="target">👥 대상자 선택</label>
+        <select id="target">
+            <option value="유아">유아 (놀이·정서중심)</option>
+            <option value="초등">초등 (놀이·환경중심)</option>
+            <option value="사회초년생">사회초년생 (힐링중심)</option>
+            <option value="50대남여">50대 남녀 (힐링중심)</option>
+            <option value="시니어">시니어 (힐링중심)</option>
+        </select>
+        <label for="season">🍃 계절 선택</label>
+        <select id="season">
+            <option value="봄">봄</option>
+            <option value="여름">여름</option>
+            <option value="가을">가을</option>
+            <option value="겨울">겨울</option>
+        </select>
+        <button class="main-btn" onclick="showProgram()">프로그램 보기</button>
+    </div>
+
+    <div id="result-screen" style="display:none;">
+        <div class="card" id="program-detail"></div>
+        <button class="back-btn" onclick="goBack()">다시 선택하기</button>
+    </div>
+</div>
+
+<script>
+var data = {
+  "유아": { keyword:"오감·놀이·정서함양", life:"오감 발달 시기로 직접 만지고 느끼는 짧은 놀이가 효과적입니다.", dance:true },
+  "초등": { keyword:"모험·환경보호·탐구", life:"호기심이 왕성하며 또래와 협동하는 미션형 활동을 선호합니다.", dance:true },
+  "사회초년생": { keyword:"위로·에너지·힐링", life:"사회 적응기 스트레스가 높아 정서적 위로와 재충전이 필요합니다.", dance:false },
+  "50대남여": { keyword:"활력·성찰·힐링", life:"삶의 전환기로 성찰과 활력 재충전이 필요한 시기입니다.", dance:false },
+  "시니어": { keyword:"회상·활력·힐링", life:"회상을 통한 정서적 안정이 중요하며 신체 부담이 적은 활동이 적합합니다.", dance:false }
+};
+
+var seasonInfo = {
+  "봄": { place:"새싹과 야생화가 돋는 완만한 숲길", safety:"① 꽃·열매 함부로 만지거나 먹지 않기 ② 벌·곤충 자극하지 않기 ③ 대열 벗어나지 않기",
+    music:"비발디 '사계 중 봄', 멘델스존 '봄노래'", danceText:"'나비야' 노래에 맞춰 팔 벌려 나는 동작",
+    rainy:"실내 씨앗 화분 만들기 (준비물: 화분, 흙, 씨앗)" },
+  "여름": { place:"그늘이 많은 계곡 근처 숲길 (물가 접근 통제)", safety:"① 물가에 혼자 가지 않기 ② 수분 자주 섭취 ③ 밝은 옷으로 벌 쏘임 대비",
+    music:"드뷔시 '물의 반영', 생상스 '동물의 사육제'", danceText:"'퐁당퐁당' 노래에 맞춰 폴짝 뛰기",
+    rainy:"실내 천연 이끼 액자 만들기 (준비물: 이끼, 목공풀, 종이)" },
+  "가을": { place:"단풍과 열매가 풍성한 숲길", safety:"① 낙엽길 미끄럼 주의 ② 야생 열매 먹지 않기 ③ 대열 유지하기",
+    music:"비발디 '사계 중 가을', 슈만 '숲의 정경'", danceText:"'낙엽' 노래에 맞춰 빙글빙글 도는 동작",
+    rainy:"실내 낙엽 콜라주 만들기 (준비물: 낙엽, 도화지, 풀)" },
+  "겨울": { place:"바람이 적은 양지바른 숲길", safety:"① 따뜻하게 옷 입기 ② 빙판·얼음 조심 ③ 추우면 즉시 알리기",
+    music:"비발디 '사계 중 겨울', 동요 '겨울바람'", danceText:"'꼬마눈사람' 노래에 맞춰 몸 움츠렸다 펴기",
+    rainy:"실내 솔방울 트리 만들기 (준비물: 솔방울, 반짝이, 목공풀)" }
+};
+
+function showProgram() {
+  var t = document.getElementById("target").value;
+  var s = document.getElementById("season").value;
+  var d = data[t];
+  var si = seasonInfo[s];
+
+  var html = "";
+  html += "<span class='badge'>" + t + " · " + s + "</span>";
+  html += "<h2>" + s + " 맞춤 숲해설 프로그램</h2>";
+  html += "<p><b>🔑 핵심 키워드:</b> " + d.keyword + "</p>";
+  html += "<div class='section-title'>👤 생애주기적 특성</div><p>" + d.life + "</p>";
+  html += "<div class='section-title'>📍 해설 장소</div><p>" + si.place + "</p>";
+  html += "<div class='safety-box'><h4>⚠️ 안전규칙 (가장 먼저 진행)</h4><p>" + si.safety + "</p></div>";
+  html += "<div class='section-title'>① 도입</div><p>안전규칙 약속하기 → " + s + " 숲에게 인사하며 마음 열기</p>";
+  html += "<div class='section-title'>② 전개</div><p>" + d.keyword + " 중심의 체험 활동 진행 (오감 관찰 · 교감 · 참여형 활동)</p>";
+  html += "<div class='section-title'>③ 마무리</div><p>오늘의 소감 나누기 → 숲에게 감사 인사</p>";
+  html += "<div class='section-title'>🎵 추천 음악</div><p>" + si.music + "</p>";
+  if (d.dance) {
+    html += "<div class='section-title'>🕺 추천 율동</div><p>" + si.danceText + "</p>";
+  }
+  html += "<div class='rainy-box'><b>🌧️ 우천·천재지변 시 실내 대체 프로그램</b><br>" + si.rainy + "</div>";
+
+  document.getElementById("program-detail").innerHTML = html;
+  document.getElementById("select-screen").style.display = "none";
+  document.getElementById("result-screen").style.display = "block";
+}
+
+function goBack() {
+  document.getElementById("result-screen").style.display = "none";
+  document.getElementById("select-screen").style.display = "block";
+}
+</script>
+
+</body>
+</html>
