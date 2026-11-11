@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대상자별 맞춤숲 해설 프로그램</title>
+    <style>
+        :root { --green: #1b5e20; --light: #e8f5e9; --red: #d32f2f; --blue: #0277bd; }
+        body { font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; margin: 0; background: #f9f9f9; color: #333; }
+        header { background: var(--green); color: white; text-align: center; padding: 1.2rem; }
+        header h1 { margin: 0; font-size: 1.3rem; }
+        header p { margin: 5px 0 0; font-size: 0.85rem; opacity: 0.9; }
+        .container { padding: 15px; max-width: 800px; margin: auto; }
+        .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        label { font-weight: bold; color: var(--green); display: block; margin: 15px 0 5px; }
+        select { width: 100%; padding: 12px; font-size: 1rem; border: 1px solid #ccc; border-radius: 8px; background: white; }
+        .main-btn { width: 100%; padding: 15px; margin-top: 20px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .hidden { display: none; }
+        .badge { display: inline-block; background: var(--light); color: var(--green); padding: 3px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 10px; }
+        .safety-box { background: #fff3f3; border: 2px solid var(--red); border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+        .safety-box h4 { color: var(--red); margin: 0 0 10px 0; }
+        .rainy-box { background: #e1f5fe; border-left: 5px solid var(--blue); padding: 15px; margin-top: 20px; border-radius: 4px; }
+        .section-title { font-weight: bold; color: var(--green); border-bottom: 2px solid var(--light); padding-bottom: 5px; margin-top: 20px; }
+        .extra-box { background: #f1f8e9; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .back-btn { width: 100%; background: #666; color: white; margin-top: 20px; border: none; padding: 12px; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🌳 대상자별 맞춤숲 해설 프로그램</h1>
+    <p>숲해설가를 위한 현장 맞춤형 가이드북</p>
+</header>
+
+<div class="container">
+    <!-- 선택 화면 -->
+    <div id="select-screen" class="card">
+        <label for="target">👥 대상자 선택</label>
+        <select id="target">
+            <option value="유아">유아 (놀이·정서중심)</option>
+            <option value="초등">초등 (놀이·환경중심)</option>
+            <option value="사회초년생">사회초년생 (힐링중심)</option>
+            <option value="50대남여">50대 남녀 (힐링중심)</option>
+            <option value="시니어">시니어 (힐링중심)</option>
+        </select>
+
+        <label for="season">🍃 계절 선택</label>
+        <select id="season">
+            <option value="봄">봄</option>
+            <option value="여름">여름</option>
+            <option value="가을">가을</option>
+            <option value="겨울">겨울</option>
+        </select>
+
+        <button class="main-btn" onclick="showProgram()">프로그램 보기</button>
+    </div>
+
+    <!-- 결과 화면 -->
+    <div id="result-screen" class="hidden">
+        <div class="card" id="program-detail"></div>
+        <button class="back-btn" onclick="goBack()">다시 선택하기</button>
+    </div>
+</div>
+
+<script>
+    // 데이터 저장소
+    const data = {
+        "유아": {
+            keyword: "오감·놀이·정서함양",
+            봄: {
+                title: "봄 숲 요정과의 놀이",
+                life: "3~7세는 오감이 발달하는 시기로, 직접 만지고 느끼는 체험이 중요합니다.",
+                place: "숲길 초입의 야생화 군락지 (안전한 평지)",
+                safety: "① 선생님 앞으로 뛰어가지 않기 ② 열매·꽃 입에 넣지 않기 ③ 친구 손 잡고 이동하기",
+                intro: "[도입] 안전 약속 '다짐 손가락 걸기' → 숲 요정에게 인사하기",
+                main: "[전개] 꽃잎 색깔 찾기 놀이, 봄바람 느끼기, 나비처럼 걷기",
+                end: "[마무리] 내가 찾은 봄 보물 발표하기, 숲에게 고마워 인사",
+                music: "비발디 '사계 중 봄', 동요 '봄나들이'",
+                dance: "🕺 율동: '나비야' 노래에 맞춰 팔 벌려 나는 동작",
+                rainy: "실내 자연물 촉감 상자 놀이 (솔방울·나뭇잎 만지기)",
+                rainy_m: "비밀상자, 솔방울, 돌멩이, 나뭇잎"
+            },
+            여름: {
+                title: "말랑말랑 물방울 여행",
+                life: "더위에 쉽게 지치므로 그늘에서 짧고 시원한 활동 위주로 구성합니다.",
+                place: "계곡 근처 나무 그늘 (물가 접근 통제 필수)",
+                safety: "① 물가에 혼자 가지 않기 ② 벌레 손으로 잡지 않기 ③ 그늘에서 물 자주 마시기",
+                intro: "[도입] 안전 약속하기 → 시원한 숲 바람과 인사",
+                main: "[전개] 나뭇잎에 물 뿌려 물방울 관찰, 물방울 굴리기 놀이",
+                end: "[마무리] 시원한 나무 안아주기, 소감 나누기",
+                music: "동요 '시냇물', 드뷔시 '물의 반영'",
+                dance: "🕺 율동: '퐁당퐁당' 노래에 맞춰 폴짝 뛰는 동작",
+                rainy: "천연 이끼 액자 만들기",
+                rainy_m: "스칸디아모스, 목공풀, 두꺼운 종이"
+            }
+        },
+        "초등": {
+            keyword: "모험·환경보호·탐구",
+            여름: {
+                title: "여름 숲 생태 탐험대",
+                life: "초등기는 호기심과 탐구심이 왕성하며 또래 협동 활동을 선호합니다.",
+                place: "생물 다양성이 풍부한 숲 생태 관찰로",
+                safety: "① 정해진 탐방로 벗어나지 않기 ② 곤충·식물 관찰만 하고 채집 금지 ③ 벌 발견 시 자세 낮추기",
+                intro: "[도입] 안전 수칙 미션카드 확인 → 탐험대 발대식",
+                main: "[전개] 숲속 소리 지도 만들기, 나무 나이 추측하기, 그늘 온도 비교 실험",
+                end: "[마무리] 환경 지킴이 약속 쓰기, 탐험 결과 공유",
+                music: "요한 슈트라우스 '봄의 소리', 생상스 '동물의 사육제'",
+                dance: "(초등 고학년은 율동 대신 미션 중심 진행)",
+                rainy: "재활용품 활용 곤충 만들기 & 기후위기 토론",
+                rainy_m: "폐지, 색연필, 재활용 병뚜껑"
+            }
+        },
+        "사회초년생": {
+            keyword: "위로·에너지·힐링",
+            여름: {
+                title: "숲에서 충전하는 나의 쉼표",
+                life: "사회 적응기의 스트레스가 높아 정서적 위로와 재충전이 필요한 시기입니다.",
+                place: "경관이 트인 숲속 쉼터, 편백나무 숲",
+                safety: "① 수분 충분히 섭취 ② 경사로 미끄럼 주의 ③ 벌 쏘임 대비 밝은색 옷",
+                intro: "[도입] 안전 안내 → 숲 호흡법으로 긴장 풀기",
+                main: "[전개] 맨발 걷기, 나무 기대어 명상, 숲멍(숲 바라보기)",
+                end: "[마무리] 나에게 쓰는 응원 엽서, 소감 나누기",
+                music: "루도비코 에이나우디 'Nuvole Bianche', 조지 윈스턴 피아노곡",
+                dance: "(성인 대상 - 율동 없음 / 스트레칭 대체)",
+                rainy: "실내 아로마 테라피 & 편백 향낭 만들기",
+                rainy_m: "편백 큐브, 에센셜 오일, 향주머니"
+            }
+        },
+        "50대남여": {
+            keyword: "활력·성찰·힐링",
+            여름: {
+                title: "인생의 여름, 숲에서 성찰하기",
+                life: "신체 변화와 삶의 전환기를 맞아 성찰과 활력 재충전이 필요합니다.",
+                place: "완만한 숲길, 약용식물 관찰지",
+                safety: "① 무리한 산행 자제 ② 충분한 수분 섭취 ③ 관절 보호 위한 스트레칭 선행",
+                intro: "[도입] 안전 안내 및 준비운동 → 숲과 교감하는 호흡",
+                main: "[전개] 약용식물 이야기, 탁족 체험, 나무와 대화하기",
+                end: "[마무리] 지나온 삶 돌아보기, 서로 응원 나누기",
+                music: "이루마 'River Flows in You', 국악 '산도깨비'",
+                dance: "(성인 대상 - 가벼운 숲 스트레칭)",
+                rainy: "실내 다도 체험 & 압화(꽃누르미) 만들기",
+                rainy_m: "야생화 압화, 코팅지, 전통차"
+            }
+        },
+        "시니어": {
+            keyword: "회상·활력·힐링",
+            여름: {
+                title: "추억이 피어나는 여름 숲",
+                life: "회상을 통한 정서적 안정이 중요하며, 신체 부담이 적은 활동이 적합합니다.",
+                place: "평탄하고 그늘진 숲길, 벤치가 있는 쉼터",
+                safety: "① 천천히 이동하며 보행 보조 ② 그늘·휴식 자주 ③ 어지럼증 즉시 알리기",
+                intro: "[도입] 안전 안내 및 건강 체크 → 숲 공기 들이마시기",
+                main: "[전개] 어릴 적
