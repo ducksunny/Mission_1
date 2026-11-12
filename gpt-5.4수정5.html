@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>숲 해설 프로그램</title>
+<style>
+body{
+  font-family:"Malgun Gothic",sans-serif;
+  background:#f4faf4;
+  margin:0;
+  padding:20px;
+  color:#243024;
+}
+.wrap{
+  max-width:960px;
+  margin:auto;
+  background:#fff;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+h1{color:#1f4d2b;margin-top:0}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:12px;
+  margin-bottom:20px;
+}
+label{
+  display:block;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+select,button{
+  width:100%;
+  padding:10px;
+  font-size:16px;
+  border-radius:10px;
+  border:1px solid #cfe0cf;
+  box-sizing:border-box;
+}
+button{
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+}
+#make{background:#2f6b3b;color:#fff}
+#reset{background:#eaf4ea;color:#1f4d2b;margin-top:8px}
+#result{
+  display:none;
+  margin-top:20px;
+  padding:18px;
+  background:#eef8ef;
+  border-radius:12px;
+}
+.card{
+  background:#fff;
+  border:1px solid #dbe9db;
+  border-radius:10px;
+  padding:12px;
+  margin-top:12px;
+  line-height:1.7;
+}
+ul,ol{margin:8px 0 0 20px}
+strong{color:#1f4d2b}
+@media (max-width:700px){
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>대상자별 맞춤 숲 해설 프로그램</h1>
+
+  <div class="grid">
+    <div>
+      <label for="target">대상자</label>
+      <select id="target">
+        <option value="">선택하세요</option>
+        <option value="유아">유아</option>
+        <option value="초등">초등</option>
+        <option value="사회초년생">사회초년생</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="season">계절</label>
+      <select id="season">
+        <option value="">선택하세요</option>
+        <option value="봄">봄</option>
+        <option value="여름">여름</option>
+        <option value="가을">가을</option>
+        <option value="겨울">겨울</option>
+      </select>
+    </div>
+
+    <div>
+      <label>&nbsp;</label>
+      <button id="make" type="button">프로그램 생성</button>
+      <button id="reset" type="button">초기화</button>
+    </div>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+const data = {
+  "유아": {
+    "봄": {
+      title: "새싹이 톡톡 숲놀이",
+      goal: "봄 숲의 변화를 오감으로 느끼며 자연과 친해진다.",
+      trait: "짧고 즐거운 놀이형 활동에 집중이 잘 된다.",
+      place: "평탄한 숲길과 꽃이 보이는 공간",
+      safety: [
+        "정해진 길로만 이동하기",
+        "꽃과 잎은 꺾지 않고 눈으로 보기",
+        "친구와 부딪히지 않게 천천히 걷기"
+      ],
+      intro: "봄 숲 인사하기, 새싹 색 찾기, 숲 냄새 맡기",
+      development: `
+        <b>소요시간:</b> 20분<br>
+        <b>준비물:</b> 돋보기, 색 카드, 활동 바구니<br>
+        <b>진행 순서:</b>
+        <ol>
+          <li>해설사가 새싹과 꽃을 보여주며 "어떤 색이 보이나요?" 질문한다.</li>
+          <li>유아가 초록색, 노란색, 분홍색 등 봄 색을 찾아 손가락으로 가리킨다.</li>
+          <li>돋보기로 새싹과 작은 꽃을 가까이 관찰한다.</li>
+          <li>꽃잎 모양을 몸으로 표현하거나 손으로 따라 그려본다.</li>
+          <li>움직이는 곤충이 보이면 조용히 관찰하며 어디에 있었는지 이야기한다.</li>
+        </ol>
+      `,
+      closing: "오늘 만난 봄 친구 이야기 나누기",
+      indoor: "꽃잎 스탬프 카드 만들기"
+    },
+    "여름": {
+      title: "시원한 숲 바람 여행",
+      goal: "여름 숲의 시원함과 생명력을 몸으로 느낀다.",
+      trait: "더위에 쉽게 지치므로 짧고 시원한 활동이 적합하다.",
+      place: "그늘이 많은 숲 쉼터",
+      safety: [
+        "무리해서 뛰지 않기",
+        "더우면 바로 쉬기",
+        "물과 모자를 챙기기"
+      ],
+      intro: "그늘 찾기, 여름 숲 소리 듣기",
+      development: `
+        <b>소요시간:</b> 20분<br>
+        <b>준비물:</b> 작은 손부채, 촉감 주머니, 돗자리<br>
+        <b>진행 순서:</b>
+        <ol>
+          <li>햇빛이 드는 곳과 그늘진 곳에 잠시 서서 느낌 차이를 비교한다.</li>
+          <li>나뭇잎과 나무껍질을 손끝으로 살짝 만지며 느낌을 말해본다.</li>
+          <li>해설사가 "바람이 어디서 오나요?"라고 묻고 아이들이 얼굴과 손으로 바람을 느낀다.</li>
+          <li>제자리에서 팔을 흔들며 나무처럼 바람 놀이를 한다.</li>
+          <li>가장 시원했던 장소를 찾아 그 이유를 말해본다.</li>
+        </ol>
+      `,
+      closing: "가장 시원했던 장소 말하기",
+      indoor: "초록 나뭇잎 부채 꾸미기"
+    },
+    "가을": {
+      title: "바스락 낙엽 숲놀이",
+      goal: "가을 숲의 색과 소리를 즐기며 자연의 변화를 느낀다.",
+      trait: "몸을 움직이며 자연물을 관찰하는 활동에 흥미가 높다.",
+      place: "낙엽이 많은 넓은 숲길",
+      safety: [
+        "낙엽 위에서 뛰지 않기",
+        "열매를 입에 넣지 않기",
+        "앞사람과 간격 두고 걷기"
+      ],
+      intro: "낙엽 소리 듣기, 가을 색 찾기",
+      development: `
+        <b>소요시간:</b> 20분<br>
+        <b>준비물:</b> 천 주머니, 색 카드, 돋보기<br>
+        <b>진행 순서:</b>
+        <ol>
+          <li>낙엽 위를 천천히 걸으며 바스락 소리를 들어본다.</li>
+          <li>빨강, 노랑, 갈색 등 가을 색과 비슷한 낙엽을 찾아본다.</li>
+          <li>큰 잎과 작은 잎, 둥근 잎과 뾰족한 잎을 비교한다.</li>
+          <li>열매를 발견하면 손대기보다 눈으로 모양과 색을 관찰한다.</li>
+          <li>마지막에 마음에 든 낙엽 하나를 골라 친구에게 소개한다.</li>
+        </ol>
+      `,
+      closing: "가을 숲 요정 포즈 하기",
+      indoor: "낙엽 콜라주 만들기"
+    },
+    "겨울": {
+      title: "조용한 겨울 숲 산책",
+      goal: "겨울 숲의 고요함을 느끼고 자연과 차분히 만난다.",
+      trait: "추위로 인해 짧고 안전한 정적 활동이 적합하다.",
+      place: "미끄럽지 않은 짧은 숲길",
+      safety: [
+        "미끄러운 곳 조심하기",
+        "장갑과 따뜻한 옷 착용하기",
+        "손을 입에 넣지 않기"
+      ],
+      intro: "겨울 숲 소리 듣기, 차가운 공기 느끼기",
+      development: `
+        <b>소요시간:</b> 15~20분<br>
+        <b>준비물:</b> 관찰 그림판, 돋보기, 방석<br>
+        <b>진행 순서:</b>
+        <ol>
+          <li>잠깐 멈춰 서서 겨울 숲의 조용한 소리를 들어본다.</li>
+          <li>잎이 떨어진 나무의 모양을 올려다보며 가지 모양을 관찰한다.</li>
+          <li>바닥이나 눈 위에 남은 새나 동물 흔적이 있는지 찾아본다.</li>
+          <li>하얀색, 회색, 갈색 등 겨울 숲에서 보이는 색을 찾아본다.</li>
+          <li>따뜻하게 손을 모으고 오늘 본 겨울 숲 모습을 한마디로 말한다.</li>
+        </ol>
+      `,
+      closing: "따뜻한 손 모으기와 느낌 말하기",
+      indoor: "솜으로 눈 내리는 숲 그림 만들기"
+    }
+  },
+
+  "초등": {
+    "봄": {
+      title: "봄 숲 생태 탐험대",
+      goal: "봄철 생태 변화를 탐색하며 관찰력을 기른다.",
+      trait: "질문과 탐구 중심 활동에서 학습 효과가 높다.",
+      place: "식물이 다양한 숲길",
+      safety: [
+        "탐험 전 이동 규칙 확인하기",
+        "생물을 함부로 만지지 않기",
+        "모둠과 함께 이동하기"
+      ],
+      intro: "탐험 규칙 확인, 봄 생물 예측하기",
+      development: `
+        <b>소요시간:</b> 25분<br>
+        <b>준비물:</b> 관찰 기록지, 연필, 돋보기, 생태 빙고판<br>
+        <b>진행 순서:</b>
+        <ol>
+          <li>모둠별로 숲길을 이동하며 새잎, 꽃, 곤충을 찾아 기록한다.</li>
+          <li>꽃 주변에 곤충이 보이면 어떤 관계가 있을지 생각해본다.</li>
+          <li>잎의 크기, 색, 냄새 등을 비교해 관찰지에 적는다.</li>
+          <li>생태 빙고판에 해당하는 생물을 찾을 때마다 표시한다.</li>
+          <li>모둠별로 가장 신기했던 봄 생태 장면 1가지를 정리한다.</li>
+        </ol>
+      `,
+      closing: "탐험 결과 발표하기",
+      indoor: "봄 생태 관찰 일지 만들기"
+    },
+    "여름": {
+      title: "여름 숲 과학 탐사",
+      goal: "여름 숲의 환경 차이를 비교하며 과학적 관찰을 한다.",
+      trait: "직접 비교하고 기록하는 활동에 참여도가 높다.",
+      place: "그늘과 햇빛이 함께 있는 숲",
+      safety: [
+        "충분히 물 마시기",
+        "벌레가 보이면 가까이 가지 않기",
+        "모둠별로 이동하기"
+      ],
+      intro: "여름 숲의 특징 이야기하기",
+      development: `
+        <b>소요시간:</b> 25분<br>
+        <b>준비물:</b> 온도계, 기록지, 연필, 소리 지도 활동지<br>
+        <b>진행 순서:</b>
+        <ol>
+          <li>햇빛이 드는 곳과 그늘진 곳의 온도를 각각 측정한다.</li>
+          <li>같은 장소에서 피부로 느껴지는 습도와 바람의 차이를 말해본다.</li>
+          <li>1분간 조용히 서서 들리는 소리를 기록한다.</li>
+          <li>매미 소리, 바람 소리, 새소리 등 들은 소리를 지도에 표시한다.</li>
+          <li>왜 숲이 여름에 시원하게 느껴지는지 모둠별로 추론한다.</li>
+        </ol>
+      `,
+      closing: "가장 인상 깊은 발견 공유하기",
+      indoor: "여름 숲 기후 비교표 만들기"
+    },
+    "가을": {
+      title: "가을 열매와 씨앗 탐구",
+      goal: "열매와 씨앗의 특징을 이해하고 자연의 순환을 배운다.",
+      trait: "분류와 비교 활동에서 성취감을 느낀다.",
+      place: "열매와 낙엽이 풍부한 숲길",
+      safety: [
+        "모르는 열매는 만지지 않기",
+        "미끄러운 길 조심하기",
+        "채집보다 관찰 중심으로 활동하기"
+      ],
+      intro: "가을 숲 색 변화 알아보기",
+      development: `
+        <b>소요시간:</b> 25분<br>
+        <b>준비물:</b> 분류 카드, 관찰 기록지, 돋보기, 색연필<br>
+        <b>진행 순서:</b>
+        <ol>
+          <li>숲길에서 다양한 열매와 씨앗을 찾아 모양과 색을 관찰한다.</li>
+          <li>둥근 씨앗, 날개 있는 씨앗, 가벼워 보이는 씨앗 등 기준을 정해 분류한다.</li>
+          <li>바람에 날릴 수 있는 씨앗과 동물에 붙어 이동할 씨앗을 예상해본다.</li>
+          <li>낙엽의 색과 잎맥 차이를 비교해 기록한다.</li>
+          <li>씨앗이 어떻게 퍼져 나가 식물이 자라는지 정리한다.</li>
+        </ol>
+      `,
+      closing: "씨앗의 여행 이야기 정리하기",
+      indoor: "열매·씨앗 분류판 만들기"
+    },
+    "겨울": {
+      title: "겨울 숲 흔적 찾기",
+      goal: "겨울 숲의 생존 흔적을 찾아보며 생태 적응을 이해한다.",
+      trait: "탐정처럼 단서를 찾는 활동에 몰입도가 높다.",
+      place: "짧고 안전한 겨울 숲길",
+      safety: [
+        "미끄럼 주의하기",
+        "손발이 차면 바로 알리기",
+        "정해진 구역 밖으로 가지 않기"
+      ],
+      intro: "겨울 숲에서 볼 수 있는 흔적 예측하기",
+      development: `
+        <b>소요시간:</b> 25분<br>
+        <b>준비물:</b> 겨울눈 관찰지, 연필, 돋보기, 흔적 카드<br>
+        <b>진행 순서:</b>
+        <ol>
+          <li>겨울 숲에서 볼 수 있는 흔적을 먼저 예측해본다.</li>
+          <li>나무 가지 끝의 겨울눈을 찾아 모양과 위치를 살핀다.</li>
+          <li>땅 위나 눈 위에 남은 발자국, 먹이 흔적, 떨어진 껍질 등을 찾아본다.</li>
+          <li>발견한 흔적이 어떤 생물과 관련 있는지 추리한다.</li>
+          <li>모둠별로 가장
