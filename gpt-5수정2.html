@@ -1,0 +1,386 @@
+맞습니다.  
+**이전 제가 보낸 전체 코드가 중간에서 잘렸습니다.**  
+그래서 `programData`가 끝까지 닫히지 않아 **버튼이 안 눌린 것처럼 보인 것**입니다.  
+제 실수예요. 미안합니다.
+
+이번에는 **끝까지 닫힌 완전한 코드**를 다시 드릴게요.  
+아래 코드를 **통째로 새 파일**에 복사해서 실행하세요.
+
+---
+
+## 완전 실행용 전체 코드
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>대상자별 맞춤 숲 해설 프로그램</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Malgun Gothic", sans-serif;
+      background: #f4faf4;
+      color: #243024;
+    }
+
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #2f6b3b, #4f8c5b);
+      color: white;
+      padding: 24px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #1f4d2b;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 1px solid #cfe0cf;
+      box-sizing: border-box;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background: #2f6b3b;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #eaf4ea;
+      color: #1f4d2b;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .result {
+      display: none;
+    }
+
+    .title-box {
+      background: #eef8ef;
+      border-left: 6px solid #2f6b3b;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .title-box h2 {
+      margin: 0 0 8px;
+      color: #1f4d2b;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      background: #dff1e2;
+      color: #1f4d2b;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .card {
+      background: #fcfffc;
+      border: 1px solid #dbe9db;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      color: #2f6b3b;
+      font-size: 18px;
+    }
+
+    ul {
+      margin: 8px 0 0 20px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #5f6f60;
+      padding: 30px 10px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 640px) {
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>대상자별 맞춤 숲 해설 프로그램</h1>
+      <p>대상자와 계절을 선택하면 맞춤형 숲 해설 프로그램이 생성됩니다.</p>
+    </section>
+
+    <section class="panel">
+      <div class="controls">
+        <div>
+          <label for="target">대상자 선택</label>
+          <select id="target">
+            <option value="">선택하세요</option>
+            <option value="유아">유아</option>
+            <option value="초등">초등</option>
+            <option value="사회초년생">사회초년생</option>
+            <option value="50대 남녀">50대 남녀</option>
+            <option value="시니어">시니어</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="season">계절 선택</label>
+          <select id="season">
+            <option value="">선택하세요</option>
+            <option value="봄">봄</option>
+            <option value="여름">여름</option>
+            <option value="가을">가을</option>
+            <option value="겨울">겨울</option>
+          </select>
+        </div>
+
+        <div>
+          <label>&nbsp;</label>
+          <div class="button-group">
+            <button type="button" id="generateBtn" class="btn-primary">프로그램 생성</button>
+            <button type="button" id="resetBtn" class="btn-secondary">초기화</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="result" class="panel result">
+      <div class="empty">대상자와 계절을 선택한 뒤 프로그램 생성 버튼을 눌러주세요.</div>
+    </section>
+  </div>
+
+  <script>
+    const programData = {
+      "유아": {
+        "봄": {
+          title: "새싹이 톡톡 숲놀이",
+          goal: "봄 숲의 변화를 오감으로 느끼며 자연과 친해진다.",
+          trait: "짧고 즐거운 놀이형 활동에 집중이 잘 된다.",
+          place: "평탄한 숲길과 꽃이 보이는 공간",
+          safety: [
+            "정해진 길로만 이동하기",
+            "꽃과 잎은 꺾지 않고 눈으로 보기",
+            "친구와 부딪히지 않게 천천히 걷기"
+          ],
+          intro: "봄 숲 인사하기, 새싹 색 찾기, 숲 냄새 맡기",
+          development: "새싹 관찰하기, 꽃 모양 따라하기, 봄 곤충 찾아보기",
+          closing: "오늘 만난 봄 친구 이야기 나누기",
+          indoor: "꽃잎 스탬프 카드 만들기"
+        },
+        "여름": {
+          title: "시원한 숲 바람 여행",
+          goal: "여름 숲의 시원함과 생명력을 몸으로 느낀다.",
+          trait: "더위에 쉽게 지치므로 짧고 시원한 활동이 적합하다.",
+          place: "그늘이 많은 숲 쉼터",
+          safety: [
+            "무리해서 뛰지 않기",
+            "더우면 바로 쉬기",
+            "물과 모자를 챙기기"
+          ],
+          intro: "그늘 찾기, 여름 숲 소리 듣기",
+          development: "나뭇잎 만져보기, 나무껍질 촉감 비교, 바람 놀이",
+          closing: "가장 시원했던 장소 말하기",
+          indoor: "초록 나뭇잎 부채 꾸미기"
+        },
+        "가을": {
+          title: "바스락 낙엽 숲놀이",
+          goal: "가을 숲의 색과 소리를 즐기며 자연의 변화를 느낀다.",
+          trait: "몸을 움직이며 자연물을 관찰하는 활동에 흥미가 높다.",
+          place: "낙엽이 많은 넓은 숲길",
+          safety: [
+            "낙엽 위에서 뛰지 않기",
+            "열매를 입에 넣지 않기",
+            "앞사람과 간격 두고 걷기"
+          ],
+          intro: "낙엽 소리 듣기, 가을 색 찾기",
+          development: "낙엽 모양 비교, 낙엽 날리기, 열매 찾기",
+          closing: "가을 숲 요정 포즈 하기",
+          indoor: "낙엽 콜라주 만들기"
+        },
+        "겨울": {
+          title: "조용한 겨울 숲 산책",
+          goal: "겨울 숲의 고요함을 느끼고 자연과 차분히 만난다.",
+          trait: "추위로 인해 짧고 안전한 정적 활동이 적합하다.",
+          place: "미끄럽지 않은 짧은 숲길",
+          safety: [
+            "미끄러운 곳 조심하기",
+            "장갑과 따뜻한 옷 착용하기",
+            "손을 입에 넣지 않기"
+          ],
+          intro: "겨울 숲 소리 듣기, 차가운 공기 느끼기",
+          development: "나무의 겨울 모습 보기, 새 발자국 찾기, 흰색 찾기",
+          closing: "따뜻한 손 모으기와 느낌 말하기",
+          indoor: "솜으로 눈 내리는 숲 그림 만들기"
+        }
+      },
+
+      "초등": {
+        "봄": {
+          title: "봄 숲 생태 탐험대",
+          goal: "봄철 생태 변화를 탐색하며 관찰력을 기른다.",
+          trait: "질문과 탐구 중심 활동에서 학습 효과가 높다.",
+          place: "식물이 다양한 숲길",
+          safety: [
+            "탐험 전 이동 규칙 확인하기",
+            "생물을 함부로 만지지 않기",
+            "모둠과 함께 이동하기"
+          ],
+          intro: "탐험 규칙 확인, 봄 생물 예측하기",
+          development: "꽃과 곤충 관계 관찰, 새잎 기록하기, 생태 빙고",
+          closing: "탐험 결과 발표하기",
+          indoor: "봄 생태 관찰 일지 만들기"
+        },
+        "여름": {
+          title: "여름 숲 과학 탐사",
+          goal: "여름 숲의 환경 차이를 비교하며 과학적 관찰을 한다.",
+          trait: "직접 비교하고 기록하는 활동에 참여도가 높다.",
+          place: "그늘과 햇빛이 함께 있는 숲",
+          safety: [
+            "충분히 물 마시기",
+            "벌레가 보이면 가까이 가지 않기",
+            "모둠별로 이동하기"
+          ],
+          intro: "여름 숲의 특징 이야기하기",
+          development: "그늘과 양지 온도 비교, 습도 체감, 소리 지도 만들기",
+          closing: "가장 인상 깊은 발견 공유하기",
+          indoor: "여름 숲 기후 비교표 만들기"
+        },
+        "가을": {
+          title: "가을 열매와 씨앗 탐구",
+          goal: "열매와 씨앗의 특징을 이해하고 자연의 순환을 배운다.",
+          trait: "분류와 비교 활동에서 성취감을 느낀다.",
+          place: "열매와 낙엽이 풍부한 숲길",
+          safety: [
+            "모르는 열매는 만지지 않기",
+            "미끄러운 길 조심하기",
+            "채집보다 관찰 중심으로 활동하기"
+          ],
+          intro: "가을 숲 색 변화 알아보기",
+          development: "씨앗 모양 비교, 바람에 날리는 씨앗 찾기, 낙엽 분류",
+          closing: "씨앗의 여행 이야기 정리하기",
+          indoor: "열매·씨앗 분류판 만들기"
+        },
+        "겨울": {
+          title: "겨울 숲 흔적 찾기",
+          goal: "겨울 숲의 생존 흔적을 찾아보며 생태 적응을 이해한다.",
+          trait: "탐정처럼 단서를 찾는 활동에 몰입도가 높다.",
+          place: "짧고 안전한 겨울 숲길",
+          safety: [
+            "미끄럼 주의하기",
+            "손발이 차면 바로 알리기",
+            "정해진 구역 밖으로 가지 않기"
+          ],
+          intro: "겨울 숲에서 볼 수 있는 흔적 예측하기",
+          development: "나무눈 관찰, 발자국 흔적 찾기, 겨울눈 스케치",
+          closing: "오늘 찾은 흔적 발표하기",
+          indoor: "겨울 숲 흔적 카드 만들기"
+        }
+      },
+
+      "사회초년생": {
+        "봄": {
+          title: "새출발 힐링 숲 워크",
+          goal: "새로운 환경에서의 긴장을 완화하고 심리적 안정감을 얻는다.",
+          trait: "스트레스 해소와 자기돌봄 중심 활동이 도움이 된다.",
+          place: "조용하고 걷기 편한 숲길",
+          safety: [
+            "무리하지 않는 속도로 걷기",
+            "불편하면 즉시 쉬기",
+            "개인 공간을 존중하며 참여하기"
+          ],
+          intro: "가벼운 호흡 정리와 숲 인사",
+          development: "봄빛 걷기, 새소리 집중, 나에게 힘이 되는 색 찾기",
+          closing: "오늘의 다짐 한마디 적기",
+          indoor: "나만의 봄 응원카드 쓰기"
+        },
+        "여름": {
+          title: "여름 숲 스트레스 환기 프로그램",
+          goal: "더위와 업무 피로를 완화하고 감각 회복을 돕는다.",
+          trait: "짧고 명확한 휴식형 활동이 적합하다.",
+          place: "바람이 잘 통하는 그늘 숲길",
+          safety: [
+            "수분 보충하기",
+            "햇빛 노출 최소화하기",
+            "몸 상태가 불편하면 즉시 쉬기"
+          ],
+          intro: "몸 상태 점검과 호흡 조절",
+          development: "그늘 명상, 자연의 소리 구분하기, 천천히 걷기",
+          closing: "몸과 마음의 변화 기록하기",
+          indoor: "스트레스 완화 향주머니 만들기"
+        },
+        "가을": {
+          title: "가을 숲 균형 회복 산책",
+          goal: "일과 삶의 균형을 돌아보며 정서적 여유를 회복한다.",
+          trait: "성찰과 대화가 결합된 활동에 반응이 좋다.",
+          place: "가을빛이 잘 드는 숲길",
+          safety: [
+            "미끄러운 낙엽길 조심하기",
+            "서두르지 않고 걷기",
+            "모둠과 함께 이동하기"
+          ],
+          intro: "지금 내 마음 날씨 표현하기",
+          development: "낙엽 소리 집중, 나를 �
