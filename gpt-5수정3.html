@@ -1,0 +1,295 @@
+좋아요. 아주 좋은 방법입니다.  
+이번에는 **무조건 작동 확인 → 다음 블록 추가** 순서로 가겠습니다.
+
+---
+
+# 1단계: 뼈대 + `유아` 블록만 넣은 코드
+
+아래 코드를 **새 파일**에 그대로 저장해서 실행하세요.  
+파일명 예: `forest_step1.html`
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>숲 해설 프로그램</title>
+  <style>
+    body {
+      font-family: "Malgun Gothic", sans-serif;
+      background: #f4faf4;
+      margin: 0;
+      padding: 20px;
+      color: #243024;
+    }
+
+    .box {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      color: #1f4d2b;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    select, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #cfe0cf;
+      box-sizing: border-box;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      font-weight: bold;
+    }
+
+    #generateBtn {
+      background: #2f6b3b;
+      color: white;
+    }
+
+    #resetBtn {
+      background: #eaf4ea;
+      color: #1f4d2b;
+      margin-top: 8px;
+    }
+
+    #result {
+      margin-top: 20px;
+      padding: 18px;
+      background: #eef8ef;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #dbe9db;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+
+    ul {
+      margin: 8px 0 0 20px;
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>대상자별 맞춤 숲 해설 프로그램</h1>
+
+    <div class="grid">
+      <div>
+        <label for="target">대상자</label>
+        <select id="target">
+          <option value="">선택하세요</option>
+          <option value="유아">유아</option>
+          <option value="초등">초등</option>
+          <option value="사회초년생">사회초년생</option>
+          <option value="50대 남녀">50대 남녀</option>
+          <option value="시니어">시니어</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="season">계절</label>
+        <select id="season">
+          <option value="">선택하세요</option>
+          <option value="봄">봄</option>
+          <option value="여름">여름</option>
+          <option value="가을">가을</option>
+          <option value="겨울">겨울</option>
+        </select>
+      </div>
+
+      <div>
+        <label>&nbsp;</label>
+        <button id="generateBtn" type="button">프로그램 생성</button>
+        <button id="resetBtn" type="button">초기화</button>
+      </div>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const programData = {
+      "유아": {
+        "봄": {
+          title: "새싹이 톡톡 숲놀이",
+          goal: "봄 숲의 변화를 오감으로 느끼며 자연과 친해진다.",
+          trait: "짧고 즐거운 놀이형 활동에 집중이 잘 된다.",
+          place: "평탄한 숲길과 꽃이 보이는 공간",
+          safety: [
+            "정해진 길로만 이동하기",
+            "꽃과 잎은 꺾지 않고 눈으로 보기",
+            "친구와 부딪히지 않게 천천히 걷기"
+          ],
+          intro: "봄 숲 인사하기, 새싹 색 찾기, 숲 냄새 맡기",
+          development: "새싹 관찰하기, 꽃 모양 따라하기, 봄 곤충 찾아보기",
+          closing: "오늘 만난 봄 친구 이야기 나누기",
+          indoor: "꽃잎 스탬프 카드 만들기"
+        },
+        "여름": {
+          title: "시원한 숲 바람 여행",
+          goal: "여름 숲의 시원함과 생명력을 몸으로 느낀다.",
+          trait: "더위에 쉽게 지치므로 짧고 시원한 활동이 적합하다.",
+          place: "그늘이 많은 숲 쉼터",
+          safety: [
+            "무리해서 뛰지 않기",
+            "더우면 바로 쉬기",
+            "물과 모자를 챙기기"
+          ],
+          intro: "그늘 찾기, 여름 숲 소리 듣기",
+          development: "나뭇잎 만져보기, 나무껍질 촉감 비교, 바람 놀이",
+          closing: "가장 시원했던 장소 말하기",
+          indoor: "초록 나뭇잎 부채 꾸미기"
+        },
+        "가을": {
+          title: "바스락 낙엽 숲놀이",
+          goal: "가을 숲의 색과 소리를 즐기며 자연의 변화를 느낀다.",
+          trait: "몸을 움직이며 자연물을 관찰하는 활동에 흥미가 높다.",
+          place: "낙엽이 많은 넓은 숲길",
+          safety: [
+            "낙엽 위에서 뛰지 않기",
+            "열매를 입에 넣지 않기",
+            "앞사람과 간격 두고 걷기"
+          ],
+          intro: "낙엽 소리 듣기, 가을 색 찾기",
+          development: "낙엽 모양 비교, 낙엽 날리기, 열매 찾기",
+          closing: "가을 숲 요정 포즈 하기",
+          indoor: "낙엽 콜라주 만들기"
+        },
+        "겨울": {
+          title: "조용한 겨울 숲 산책",
+          goal: "겨울 숲의 고요함을 느끼고 자연과 차분히 만난다.",
+          trait: "추위로 인해 짧고 안전한 정적 활동이 적합하다.",
+          place: "미끄럽지 않은 짧은 숲길",
+          safety: [
+            "미끄러운 곳 조심하기",
+            "장갑과 따뜻한 옷 착용하기",
+            "손을 입에 넣지 않기"
+          ],
+          intro: "겨울 숲 소리 듣기, 차가운 공기 느끼기",
+          development: "나무의 겨울 모습 보기, 새 발자국 찾기, 흰색 찾기",
+          closing: "따뜻한 손 모으기와 느낌 말하기",
+          indoor: "솜으로 눈 내리는 숲 그림 만들기"
+        }
+      }
+    };
+
+    const targetEl = document.getElementById("target");
+    const seasonEl = document.getElementById("season");
+    const generateBtn = document.getElementById("generateBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const result = document.getElementById("result");
+
+    function renderProgram(data, target, season) {
+      result.style.display = "block";
+      result.innerHTML = `
+        <h2>${target} - ${season}</h2>
+        <div class="card"><strong>프로그램명:</strong> ${data.title}</div>
+        <div class="card"><strong>목표:</strong> ${data.goal}</div>
+        <div class="card"><strong>대상 특성:</strong> ${data.trait}</div>
+        <div class="card"><strong>장소:</strong> ${data.place}</div>
+        <div class="card">
+          <strong>안전사항:</strong>
+          <ul>${data.safety.map(item => `<li>${item}</li>`).join("")}</ul>
+        </div>
+        <div class="card"><strong>도입:</strong> ${data.intro}</div>
+        <div class="card"><strong>전개:</strong> ${data.development}</div>
+        <div class="card"><strong>마무리:</strong> ${data.closing}</div>
+        <div class="card"><strong>실내 대체활동:</strong> ${data.indoor}</div>
+      `;
+    }
+
+    generateBtn.addEventListener("click", function () {
+      const target = targetEl.value;
+      const season = seasonEl.value;
+
+      if (!target || !season) {
+        alert("대상자와 계절을 모두 선택하세요.");
+        return;
+      }
+
+      if (!programData[target] || !programData[target][season]) {
+        alert("아직 추가되지 않은 데이터입니다.");
+        return;
+      }
+
+      renderProgram(programData[target][season], target, season);
+    });
+
+    resetBtn.addEventListener("click", function () {
+      targetEl.value = "";
+      seasonEl.value = "";
+      result.style.display = "none";
+      result.innerHTML = "";
+    });
+  </script>
+</body>
+</html>
+```
+
+---
+
+# 확인 방법
+이제 아래처럼 해보세요.
+
+1. `유아` 선택
+2. `봄` 선택
+3. **프로그램 생성** 클릭
+
+정상이라면 결과가 아래에 나와야 합니다.
+
+그리고 일부러  
+- `초등`
+- `사회초년생`
+
+같이 아직 안 넣은 대상을 선택하면  
+**"아직 추가되지 않은 데이터입니다."** 알림이 떠야 정상입니다.
+
+---
+
+# 지금 확인해주실 것
+딱 2가지만 알려주세요.
+
+### 1) `유아-봄`이 생성되는지
+- 된다 / 안 된다
+
+### 2) 다른 대상 선택 시 경고가 뜨는지
+- 뜬다 / 안 뜬다
+
+---
+
+이 단계만 통과하면 아주 잘 가고 있는 겁니다.  
+통과하면 다음 답변에서 바로 **2블록: 초등 데이터만 추가**해드릴게요.
