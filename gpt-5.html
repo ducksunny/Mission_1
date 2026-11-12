@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>대상자별 맞춤 숲 해설 프로그램</title>
+  <style>
+    :root {
+      --green-900: #1f4d2b;
+      --green-800: #2f6b3b;
+      --green-700: #3f7f4d;
+      --green-500: #67a36f;
+      --green-200: #dff1e2;
+      --green-100: #eef8ef;
+      --bg: #f6fbf6;
+      --card: rgba(255, 255, 255, 0.9);
+      --text: #223022;
+      --muted: #5c6d5e;
+      --line: #d9e7da;
+      --warn: #fff5de;
+      --shadow: 0 10px 30px rgba(31, 77, 43, 0.08);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #eef8ef 0%, #f8fcf8 45%, #f4f9f4 100%);
+      line-height: 1.65;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #245a31, #4c8a57 65%, #71b07b);
+      color: white;
+      padding: 34px 28px;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -40px;
+      width: 180px;
+      height: 180px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 50%;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero p {
+      margin: 6px 0;
+      opacity: 0.96;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.65);
+      backdrop-filter: blur(8px);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .panel-title {
+      margin: 0 0 16px;
+      color: var(--green-900);
+      font-size: 20px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--green-900);
+    }
+
+    select, button {
+      width: 100%;
+      border-radius: 14px;
+      font-size: 16px;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      outline: none;
+    }
+
+    select {
+      background: #fff;
+      color: var(--text);
+    }
+
+    select:focus, button:focus {
+      box-shadow: 0 0 0 4px rgba(103, 163, 111, 0.15);
+    }
+
+    .btn {
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green-800), var(--green-700));
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(0.98);
+    }
+
+    .btn-secondary {
+      background: #edf5ee;
+      color: var(--green-900);
+      border: 1px solid var(--line);
+    }
+
+    .btn-secondary:hover {
+      background: #e4f0e6;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .result {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .title-box {
+      background: linear-gradient(135deg, #f1f8f1, #f7fbf7);
+      border: 1px solid var(--line);
+      border-left: 7px solid var(--green-700);
+      padding: 20px;
+      border-radius: 18px;
+      margin-bottom: 18px;
+    }
+
+    .title-box h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      color: var(--green-900);
+    }
+
+    .title-box p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      background: var(--green-200);
+      color: var(--green-900);
+      font-size: 14px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 4px 14px rgba(31, 77, 43, 0.04);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: var(--green-800);
+    }
+
+    .card p {
+      margin: 0;
+    }
+
+    .order-box {
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: #fcfffc;
+      margin-bottom: 18px;
+    }
+
+    .step {
+      padding: 18px;
+      border-bottom: 1px solid #e5efe6;
+    }
+
+    .step:last-child {
+      border-bottom: none;
+    }
+
+    .step h4 {
+      margin: 0 0 8px;
+      color: var(--green-900);
+      font-size: 17px;
+    }
+
+    .safe {
+      background: var(--warn);
+    }
+
+    ul {
+      margin: 8px 0 0 18px;
+      padding: 0;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 26px 10px;
+      font-weight: 600;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .mini-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .mini-box {
+      background: #f8fcf8;
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 640px) {
+      .wrap {
+        padding: 14px;
+      }
+
+      .hero {
+        padding: 26px 20px;
+        border-radius: 22px;
+      }
+
+      .hero h1 {
+        font-size: 26px;
+      }
+
+      .title-box h2 {
+        font-size: 23px;
+      }
+
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>대상자별 맞춤 숲 해설 프로그램</h1>
+      <p>대상자와 계절을 선택하면 맞춤형 숲 해설 프로그램이 자동으로 생성됩니다.</p>
+      <p><strong>구성 순서:</strong> 안전규칙 → 도입 → 전개 → 마무리</p>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">프로그램 선택</h2>
+      <div class="controls">
+        <div>
+          <label for="target">대상자 선택</label>
+          <select id="target">
+            <option value="">대상자를 선택하세요</option>
+            <option value="유아">유아</option>
+            <option value="초등">초등</option>
+            <option value="사회초년생">사회초년생</option>
+            <option value="50대 남녀">50대 남녀</option>
+            <option value="시니어">시니어</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="season">계절 선택</label>
+          <select id="season">
+            <option value="">계절을 선택하세요</option>
+            <option value="봄">봄</option>
+            <option value="여름">여름</option>
+            <option value="가을">가을</option>
+            <option value="겨울">겨울</option>
+          </select>
+        </div>
+
+        <div>
+          <label>&nbsp;</label>
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="generateProgram()">프로그램 생성</button>
+            <button class="btn btn-secondary" onclick="resetForm()">초기화</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mini-info">
+        <div class="mini-box">5개 대상자 × 4계절 구성</div>
+        <div class="mini-box">실내 연계활동 및 준비물 포함</div>
+        <div class="mini-box">대상자별 심리·발달 특성 반영</div>
+      </div>
+
+      <p class="note">※ 현장 적용 시 날씨, 이동 거리, 참여자의 건강 상태에 따라 시간을 조절하세요.</p>
+    </section>
+
+    <section id="result" class="panel result"></section>
+  </div>
+
+  <script>
+    const programData = {
+      "유아": {
+        "봄": {
+          title: "새싹이 톡톡 숲놀이",
+          direction: "놀이 중심 · 환경보호 · 정서함양",
+          keywords: "새싹·오감·놀이·정서함양",
+          lifecycle: "움직임 욕구와 호기심이 크므로 짧고 즐거운 오감 활동이 적합함",
+          place: "햇볕이 부드럽게 드는 숲 가장자리와 새싹 관찰이 쉬운 산책로",
+          background: "봄 숲의 새싹, 야생화, 작은 곤충을 통해 생명의 시작과 자연의 변화를 느끼는 활동",
+          safety: [
+            "꽃과 잎은 눈으로만 관찰하기",
+            "정해진 길 밖으로 나가지 않기",
+            "뛰지 않고 친구와 함께 이동하기"
+          ],
+          intro: "안전 약속하기 → 새싹 인사 놀이 → 숲의 봄 냄새 맡아보기",
+          development: "새싹 색 찾기, 꽃잎 모양 흉내내기, 작은 곤충 그림자 놀이",
+          closing: "새싹 손인사, 오늘 본 봄 친구 이야기 나누기",
+          music: "동요 '봄나들이', 비발디 '사계-봄'",
+          dance: "'새싹이 자라요' 동작으로 쭈그리고 앉았다가 천천히 일어서기",
+          indoorActivity: "꽃잎 스탬프 카드 만들기",
+          indoorItems: "스펀지 도장, 물감, 도화지, 물티슈"
+        },
+        "여름": {
+          title: "말랑말랑 물방울 여행",
+          direction: "놀이 중심 · 환경보호 · 정서함양",
+          keywords: "오감·놀이·정서함양",
+          lifecycle: "더위에 쉽게 지치므로 그늘에서 짧고 시원한 활동 위주가 적합함",
+          place: "계곡 근처 나무 그늘 (물가 접근 통제 필수)",
+          background: "여름 숲의 시원한 그늘과 물방울, 습한 환경의 생태를 오감으로 경험하는 활동",
+          safety: [
+            "물가에 혼자 가지 않기",
+            "벌레를 손으로 잡지 않기",
+            "그늘에서 물을 자주 마시기"
+          ],
+          intro: "안전 약속하기 → 시원한 숲 바람과 인사",
+          development: "나뭇잎에 물 뿌려 물방울 관찰, 물방울 굴리기 놀이",
+          closing: "시원한 나무 안아주기, 소감 나누기",
+          music: "동요 '시냇물', 드뷔시 '물의 반영'",
+          dance: "'퐁당퐁당' 노래에 맞춰 폴짝 뛰는 동작",
+          indoorActivity: "천연 이끼 액자 만들기",
+          indoorItems: "스칸디아모스, 목공풀, 두꺼운 종이"
+        },
+        "가을": {
+          title: "바스락 낙엽 요정의 숲",
+          direction: "놀이 중심 · 환경보호 · 정서함양",
+          keywords: "낙엽·율동·놀이·환경보호",
+          lifecycle: "자연물에 대한 흥미가 높아 만지고 움직이는 놀이형 활동이 효과적임",
+          place: "낙엽이 풍부한 평탄한 숲길과 넓은 쉼터",
+          background: "낙엽과 열매를 통해 숲의 결실과 순환을 자연스럽게 배우는 활동",
+          safety: [
+            "미끄러운 낙엽 위에서 뛰지 않기",
+            "도토리나 열매를 입에 넣지 않기",
+            "친구와 부딪히지 않도록 간격 지키기"
+          ],
+          intro: "안전 약속하기 → 바스락 낙엽 소리 듣기 → 가을숲 색깔 찾기",
+          development: "낙엽 모양 맞추기, 바람 따라 낙엽 날리기, 열매 색깔 모으기 놀이",
+          closing: "낙엽 비 맞기 흉내내기
