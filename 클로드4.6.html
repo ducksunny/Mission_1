@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대상자별 맞춤 숲 해설 프로그램</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    min-height: 100vh;
+    padding: 20px;
+    color: #2e7d32;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.8em;
+    margin-bottom: 8px;
+    color: #1b5e20;
+  }
+  .subtitle {
+    text-align: center;
+    color: #558b2f;
+    margin-bottom: 30px;
+    font-size: 0.95em;
+  }
+
+  /* 선택 영역 */
+  .select-area {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .select-area h2 {
+    font-size: 1em;
+    color: #388e3c;
+    margin-bottom: 12px;
+  }
+  .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .btn {
+    padding: 10px 18px;
+    border: 2px solid #a5d6a7;
+    border-radius: 30px;
+    background: white;
+    color: #388e3c;
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn:hover { background: #e8f5e9; }
+  .btn.active {
+    background: #388e3c;
+    color: white;
+    border-color: #388e3c;
+  }
+
+  /* 결과 영역 */
+  .result-area {
+    display: none;
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .result-title {
+    font-size: 1.4em;
+    color: #1b5e20;
+    margin-bottom: 4px;
+  }
+  .result-keyword {
+    color: #81c784;
+    font-size: 0.9em;
+    margin-bottom: 20px;
+  }
+
+  /* 섹션 카드 */
+  .section-card {
+    border-left: 4px solid #66bb6a;
+    background: #f9fbe7;
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .section-card h3 {
+    font-size: 1em;
+    color: #2e7d32;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-card ul {
+    padding-left: 18px;
+    color: #4a4a4a;
+    line-height: 1.8;
+    font-size: 0.93em;
+  }
+  .section-card p {
+    color: #4a4a4a;
+    line-height: 1.8;
+    font-size: 0.93em;
+  }
+
+  /* 안전규칙 강조 */
+  .safety-card {
+    border-left-color: #ef5350;
+    background: #fff8f8;
+  }
+  .safety-card h3 { color: #c62828; }
+
+  /* 음악 */
+  .music-card { border-left-color: #ab47bc; background: #fdf6ff; }
+  .music-card h3 { color: #6a1b9a; }
+
+  /* 우천 토글 */
+  .rain-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #e3f2fd;
+    border: 2px solid #90caf9;
+    color: #1565c0;
+    border-radius: 30px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-family: inherit;
+    margin-top: 10px;
+    transition: all 0.2s;
+  }
+  .rain-toggle-btn:hover { background: #bbdefb; }
+  .rain-section {
+    display: none;
+    border-left-color: #42a5f5;
+    background: #e3f2fd;
+    margin-top: 12px;
+  }
+  .rain-section h3 { color: #1565c0; }
+  .rain-section.show { display: block; }
+
+  /* 특성 정보 */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .info-box {
+    background: #f1f8e9;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.88em;
+    color: #33691e;
+  }
+  .info-box strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #1b5e20;
+  }
+  @media (max-width: 500px) {
+    .info-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 1.3em; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🌿 맞춤 숲 해설 프로그램</h1>
+<p class="subtitle">대상자와 계절을 선택하면 맞춤 프로그램이 생성됩니다</p>
+
+<!-- 선택 영역 -->
+<div class="select-area">
+  <h2>👤 대상자 선택</h2>
+  <div class="btn-group" id="targetGroup">
+    <button class="btn" onclick="select('target','유아')">🧒 유아</button>
+    <button class="btn" onclick="select('target','초등')">📚 초등</button>
+    <button class="btn" onclick="select('target','사회초년생')">💼 사회초년생</button>
+    <button class="btn" onclick="select('target','50대')">🌳 50대 남녀</button>
+    <button class="btn" onclick="select('target','시니어')">🌸 시니어</button>
+  </div>
+  <h2 style="margin-top:16px;">🍃 계절 선택</h2>
+  <div class="btn-group" id="seasonGroup">
+    <button class="btn" onclick="select('season','봄')">🌸 봄</button>
+    <button class="btn" onclick="select('season','여름')">☀️ 여름</button>
+    <button class="btn" onclick="select('season','가을')">🍂 가을</button>
+    <button class="btn" onclick="select('season','겨울')">❄️ 겨울</button>
+  </div>
+</div>
+
+<!-- 결과 영역 -->
+<div class="result-area" id="resultArea"></div>
+
+<script>
+const state = { target: null, season: null };
+
+function select(type, value) {
+  state[type] = value;
+  // 버튼 활성화
+  const groupId = type === 'target' ? 'targetGroup' : 'seasonGroup';
+  document.querySelectorAll('#' + groupId + ' .btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (state.target && state.season) renderResult();
+}
+
+function toggleRain() {
+  const el = document.getElementById('rainSection');
+  el.classList.toggle('show');
+  const btn = document.getElementById('rainBtn');
+  btn.textContent = el.classList.contains('show')
+    ? '🌂 우천 대체 프로그램 닫기'
+    : '🌂 우천 시 실내 대체 프로그램 보기';
+}
+
+function renderResult() {
+  const d = getData(state.target, state.season);
+  if (!d) return;
+
+  const area = document.getElementById('resultArea');
+  area.style.display = 'block';
+  area.innerHTML = `
+    <div class="result-title">${d.emoji} ${d.title}</div>
+    <div class="result-keyword">🔑 키워드 : ${d.keyword}</div>
+
+    <div class="info-grid">
+      <div class="info-box"><strong>👤 생애주기 특성</strong>${d.lifecycle}</div>
+      <div class="info-box"><strong>📍 해설 장소</strong>${d.place}</div>
+    </div>
+
+    <div class="section-card safety-card">
+      <h3>🚨 안전규칙 (최우선)</h3>
+      <ul>${d.safety.map(s=>`<li>${s}</li>`).join('')}</ul>
+    </div>
+
+    <div class="section-card">
+      <h3>🌱 도입</h3>
+      <ul>${d.intro.map(s=>`<li>${s}</li>`).join('')}</ul>
+    </div>
+
+    <div class="section-card">
+      <h3>🌿 전개</h3>
+      <ul>${d.main.map(s=>`<li>${s}</li>`).join('')}</ul>
+    </div>
+
+    <div class="section-card">
+      <h3>🍃 마무리</h3>
+      <ul>${d.closing.map(s=>`<li>${s}</li>`).join('')}</ul>
+    </div>
+
+    <div class="section-card music-card">
+      <h3>🎵 추천 음악</h3>
+      <ul>${d.music.map(s=>`<li>${s}</li>`).join('')}</ul>
+    </div>
+
+    ${d.dance ? `
+    <div class="section-card" style="border-left-color:#ff8a65;background:#fff3e0;">
+      <h3 style="color:#bf360c;">💃 율동</h3>
+      <p>${d.dance}</p>
+    </div>` : ''}
+
+    <button class="rain-toggle-btn" id="rainBtn" onclick="toggleRain()">
+      🌂 우천 시 실내 대체 프로그램 보기
+    </button>
+
+    <div class="section-card rain-section" id="rainSection">
+      <h3>🌧️ 우천 시 실내 대체 프로그램</h3>
+      <p>${d.rain.activity}</p>
+      <ul style="margin-top:8px;">${d.rain.items.map(s=>`<li>${s}</li>`).join('')}</ul>
+    </div>
+  `;
+  area.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ===================== 데이터 ===================== */
+function getData(target, season) {
+  const db = {
+
+    /* ───────────── 유아 ───────────── */
+    '유아': {
+      '봄': {
+        emoji:'🌸', title:'유아 — 「봄 숲 요정과 꽃 친구」',
+        keyword:'오감·놀이·정서함양',
+        lifecycle:'봄 햇살에 민감하므로 짧은 활동 반복, 자연물 직접 만지기 좋아함',
+        place:'꽃이 피는 완만한 숲길, 넓은 잔디밭',
+        safety:['① 꽃·열매 입에 넣지 않기','② 벌·나비 손으로 잡지 않기','③ 정해진 구역 벗어나지 않기'],
+        intro:['안전 약속 손 들고 외치기','봄 숲 바람과 인사 — 눈 감고 봄 냄새 맡기'],
+        main:['꽃잎 색깔 찾기 놀이','민들레 홀씨 불기','나뭇잎 탁본 만들기'],
+        closing:['봄꽃에게 감사 인사하기','오늘 본 것 한 가지씩 말하기'],
+        music:['동요 「나비야」','비발디 「사계 — 봄」'],
+        dance:'「나비야」 노래에 맞춰 팔을 나비처럼 펄럭이는 동작',
+        rain:{ activity:'봄꽃 종이 콜라주 만들기', items:['준비물: 색종이, 풀, 도화지, 크레파스'] }
+      },
+      '여름': {
+        emoji:'💧', title:'유아 — 「말랑말랑 물방울 여행」',
+        keyword:'오감·놀이·정서함양',
+        lifecycle:'더위에 쉽게 지치므로 그늘에서 짧고 시원한 활동 위주',
+        place:'계곡 근처 나무 그늘 (물가 접근 통제 필수)',
+        safety:['① 물가에 혼자 가지 않기','② 벌레 손으로 잡지 않기','③ 그늘에서 물 자주 마시기'],
+        intro:['안전 약속하기','시원한 숲 바람과 인사'],
+        main:['나뭇잎에 물 뿌려 물방울 관찰','물방울 굴리기 놀이'],
+        closing:['시원한 나무 안아주기','소감 나누기'],
+        music:['동요 「시냇물」','드뷔시 「물의 반영」'],
+        dance:'「퐁당퐁당」 노래에 맞춰 폴짝 뛰는 동작',
+        rain:{ activity:'천연 이끼 액자 만들기', items:['준비물: 스칸디아모스, 목공풀, 두꺼운 종이'] }
+      },
+      '가을': {
+        emoji:'🍂', title:'유아 — 「바스락
