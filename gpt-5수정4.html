@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>숲 해설 프로그램</title>
+<style>
+body{font-family:"Malgun Gothic",sans-serif;background:#f4faf4;margin:0;padding:20px;color:#243024}
+.wrap{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+h1{color:#1f4d2b}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+label{display:block;font-weight:bold;margin-bottom:6px}
+select,button{width:100%;padding:10px;font-size:16px;border-radius:10px;border:1px solid #cfe0cf;box-sizing:border-box}
+button{border:none;font-weight:bold;cursor:pointer}
+#make{background:#2f6b3b;color:#fff}
+#reset{background:#eaf4ea;color:#1f4d2b;margin-top:8px}
+#result{display:none;margin-top:20px;padding:18px;background:#eef8ef;border-radius:12px}
+.card{background:#fff;border:1px solid #dbe9db;border-radius:10px;padding:12px;margin-top:12px}
+ul{margin:8px 0 0 20px}
+@media (max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>대상자별 맞춤 숲 해설 프로그램</h1>
+
+<div class="grid">
+  <div>
+    <label for="target">대상자</label>
+    <select id="target">
+      <option value="">선택하세요</option>
+      <option value="유아">유아</option>
+      <option value="초등">초등</option>
+      <option value="사회초년생">사회초년생</option>
+    </select>
+  </div>
+  <div>
+    <label for="season">계절</label>
+    <select id="season">
+      <option value="">선택하세요</option>
+      <option value="봄">봄</option>
+      <option value="여름">여름</option>
+      <option value="가을">가을</option>
+      <option value="겨울">겨울</option>
+    </select>
+  </div>
+  <div>
+    <label>&nbsp;</label>
+    <button id="make" type="button">프로그램 생성</button>
+    <button id="reset" type="button">초기화</button>
+  </div>
+</div>
+
+<div id="result"></div>
+</div>
+
+<script>
+const data={
+"유아":{
+"봄":{title:"새싹이 톡톡 숲놀이",goal:"봄 숲의 변화를 오감으로 느끼며 자연과 친해진다.",trait:"짧고 즐거운 놀이형 활동에 집중이 잘 된다.",place:"평탄한 숲길과 꽃이 보이는 공간",safety:["정해진 길로만 이동하기","꽃과 잎은 꺾지 않고 눈으로 보기","친구와 부딪히지 않게 천천히 걷기"],intro:"봄 숲 인사하기, 새싹 색 찾기, 숲 냄새 맡기",development:"새싹 관찰하기, 꽃 모양 따라하기, 봄 곤충 찾아보기",closing:"오늘 만난 봄 친구 이야기 나누기",indoor:"꽃잎 스탬프 카드 만들기"},
+"여름":{title:"시원한 숲 바람 여행",goal:"여름 숲의 시원함과 생명력을 몸으로 느낀다.",trait:"더위에 쉽게 지치므로 짧고 시원한 활동이 적합하다.",place:"그늘이 많은 숲 쉼터",safety:["무리해서 뛰지 않기","더우면 바로 쉬기","물과 모자를 챙기기"],intro:"그늘 찾기, 여름 숲 소리 듣기",development:"나뭇잎 만져보기, 나무껍질 촉감 비교, 바람 놀이",closing:"가장 시원했던 장소 말하기",indoor:"초록 나뭇잎 부채 꾸미기"},
+"가을":{title:"바스락 낙엽 숲놀이",goal:"가을 숲의 색과 소리를 즐기며 자연의 변화를 느낀다.",trait:"몸을 움직이며 자연물을 관찰하는 활동에 흥미가 높다.",place:"낙엽이 많은 넓은 숲길",safety:["낙엽 위에서 뛰지 않기","열매를 입에 넣지 않기","앞사람과 간격 두고 걷기"],intro:"낙엽 소리 듣기, 가을 색 찾기",development:"낙엽 모양 비교, 낙엽 날리기, 열매 찾기",closing:"가을 숲 요정 포즈 하기",indoor:"낙엽 콜라주 만들기"},
+"겨울":{title:"조용한 겨울 숲 산책",goal:"겨울 숲의 고요함을 느끼고 자연과 차분히 만난다.",trait:"추위로 인해 짧고 안전한 정적 활동이 적합하다.",place:"미끄럽지 않은 짧은 숲길",safety:["미끄러운 곳 조심하기","장갑과 따뜻한 옷 착용하기","손을 입에 넣지 않기"],intro:"겨울 숲 소리 듣기, 차가운 공기 느끼기",development:"나무의 겨울 모습 보기, 새 발자국 찾기, 흰색 찾기",closing:"따뜻한 손 모으기와 느낌 말하기",indoor:"솜으로 눈 내리는 숲 그림 만들기"}
+},
+"초등":{
+"봄":{title:"봄 숲 생태 탐험대",goal:"봄철 생태 변화를 탐색하며 관찰력을 기른다.",trait:"질문과 탐구 중심 활동에서 학습 효과가 높다.",place:"식물이 다양한 숲길",safety:["탐험 전 이동 규칙 확인하기","생물을 함부로 만지지 않기","모둠과 함께 이동하기"],intro:"탐험 규칙 확인, 봄 생물 예측하기",development:"꽃과 곤충 관계 관찰, 새잎 기록하기, 생태 빙고",closing:"탐험 결과 발표하기",indoor:"봄 생태 관찰 일지 만들기"},
+"여름":{title:"여름 숲 과학 탐사",goal:"여름 숲의 환경 차이를 비교하며 과학적 관찰을 한다.",trait:"직접 비교하고 기록하는 활동에 참여도가 높다.",place:"그늘과 햇빛이 함께 있는 숲",safety:["충분히 물 마시기","벌레가 보이면 가까이 가지 않기","모둠별로 이동하기"],intro:"여름 숲의 특징 이야기하기",development:"그늘과 양지 온도 비교, 습도 체감, 소리 지도 만들기",closing:"가장 인상 깊은 발견 공유하기",indoor:"여름 숲 기후 비교표 만들기"},
+"가을":{title:"가을 열매와 씨앗 탐구",goal:"열매와 씨앗의 특징을 이해하고 자연의 순환을 배운다.",trait:"분류와 비교 활동에서 성취감을 느낀다.",place:"열매와 낙엽이 풍부한 숲길",safety:["모르는 열매는 만지지 않기","미끄러운 길 조심하기","채집보다 관찰 중심으로 활동하기"],intro:"가을 숲 색 변화 알아보기",development:"씨앗 모양 비교, 바람에 날리는 씨앗 찾기, 낙엽 분류",closing:"씨앗의 여행 이야기 정리하기",indoor:"열매·씨앗 분류판 만들기"},
+"겨울":{title:"겨울 숲 흔적 찾기",goal:"겨울 숲의 생존 흔적을 찾아보며 생태 적응을 이해한다.",trait:"탐정처럼 단서를 찾는 활동에 몰입도가 높다.",place:"짧고 안전한 겨울 숲길",safety:["미끄럼 주의하기","손발이 차면 바로 알리기","정해진 구역 밖으로 가지 않기"],intro:"겨울 숲에서 볼 수 있는 흔적 예측하기",development:"나무눈 관찰, 발자국 흔적 찾기, 겨울눈 스케치",closing:"오늘 찾은 흔적 발표하기",indoor:"겨울 숲 흔적 카드 만들기"}
+},
+"사회초년생":{
+"봄":{title:"리셋 숲 워크",goal:"긴장과 스트레스를 완화하고 심리적 회복감을 느낀다.",trait:"업무 적응 과정에서 정서 환기와 짧은 회복 활동이 필요하다.",place:"조용하고 완만한 숲 산책로",safety:["무리한 속도로 걷지 않기","개인 간격 유지하기","수분 섭취 챙기기"],intro:"오늘의 컨디션 확인, 천천히 호흡 정리하기",development:"감각 열기 걷기, 새소리 듣기, 초록색 찾기, 짧은 침묵 산책",closing:"지금의 기분을 한 문장으로 나누기",indoor:"나만의 회복 키워드 카드 만들기"},
+"여름":{title:"그늘 숲 힐링 타임",goal:"더위와 피로를 낮추며 몸과 마음의 긴장을 풀어준다.",trait:"피로가 누적되기 쉬워 휴식 중심의 활동이 효과적이다.",place:"그늘이 풍부하고 쉼터가 있는 숲길",safety:["더우면 즉시 쉬기","벌레와 식물에 무리하게 가까이 가지 않기","물 충분히 마시기"],intro:"몸 상태 점검, 시원한 장소 찾기",development:"그늘과 햇빛 차이 느끼기, 나무 아래 호흡 명상, 촉감 관찰",closing:"가장 편안했던 순간 공유하기",indoor:"쿨링 메시지 엽서 쓰기"},
+"가을":{title:"감성 회복 숲 산책",goal:"가을 숲의 색과 분위기를 통해 정서적 환기를 경험한다.",trait:"감정 정리와 자기표현 활동이 회복에 도움이 된다.",place:"단풍이 보이는 완만한 숲길",safety:["낙엽길 미끄럼 주의하기","열매를 함부로 만지거나 먹지 않기","팀에서 멀어지지 않기"],intro:"오늘의 기분 색깔 고르기",development:"낙엽 소리 듣기, 가을 색 찾기, 마음에 드는 풍경 기록하기",closing:"오늘의 감정 변화 나누기",indoor:"가을 문장 한 줄 쓰기"},
+"겨울":{title:"고요한 겨울 숲 회복",goal:"차분한 겨울 숲 속에서 정서적 안정과 휴식을 경험한다.",trait:"과도한 활동보다 짧고 조용한 프로그램이 적합하다.",place:"안전하고 짧은 겨울 숲길",safety:["방한 준비 철저히 하기","미끄러운 길 조심하기","추위를 느끼면 바로 알리기"],intro:"호흡 가다듬기, 겨울 공기 느끼기",development:"소리 적은 숲 걷기, 겨울 나무 관찰, 천천히 감각 집중하기",closing:"지금 마음 상태를 한 단어로 표현하기",indoor:"겨울 무드 카드 만들기"}
+}
+};
+
+const target=document.getElementById("target");
+const season=document.getElementById("season");
+const result=document.getElementById("result");
+
+function view(p,t,s){
+  result.style.display="block";
+  result.innerHTML=`
+    <h2>${t} - ${s}</h2>
+    <div class="card"><strong>프로그램명:</strong> ${p.title}</div>
+    <div class="card"><strong>목표:</strong> ${p.goal}</div>
+    <div class="card"><strong>대상 특성:</strong> ${p.trait}</div>
+    <div class="card"><strong>장소:</strong> ${p.place}</div>
+    <div class="card"><strong>안전사항:</strong><ul>${p.safety.map(v=>`<li>${v}</li>`).join("")}</ul></div>
+    <div class="card"><strong>도입:</strong> ${p.intro}</div>
+    <div class="card"><strong>전개:</strong> ${p.development}</div>
+    <div class="card"><strong>마무리:</strong> ${p.closing}</div>
+    <div class="card"><strong>실내 대체활동:</strong> ${p.indoor}</div>
+  `;
+}
+
+document.getElementById("make").addEventListener("click",()=>{
+  const t=target.value;
+  const s=season.value;
+  if(!t||!s){alert("대상자와 계절을 모두 선택하세요.");return;}
+  const p=data[t]&&data[t][s];
+  if(!p){alert("데이터가 없습니다.");return;}
+  view(p,t,s);
+});
+
+document.getElementById("reset").addEventListener("click",()=>{
+  target.value="";
+  season.value="";
+  result.style.display="none";
+  result.innerHTML="";
+});
+</script>
+</body>
+</html>
