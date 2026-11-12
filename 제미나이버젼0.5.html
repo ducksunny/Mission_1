@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>대상자별 맞춤숲 해설 프로그램</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; background-color: #f0f7f0; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2d5a27; border-bottom: 2px solid #2d5a27; padding-bottom: 10px; }
+        .selection-box { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        select, button { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; }
+        button { background-color: #4CAF50; color: white; cursor: pointer; border: none; transition: 0.3s; }
+        button:hover { background-color: #45a049; }
+        #result { margin-top: 20px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; display: none; background-color: #fafafa; }
+        .category { font-weight: bold; color: #2d5a27; margin-top: 15px; display: block; border-left: 4px solid #4CAF50; padding-left: 10px; }
+        .safety { background-color: #fff3f3; border: 1px solid #ffcdd2; padding: 10px; border-radius: 5px; color: #d32f2f; font-weight: bold; }
+        .alternative { background-color: #e3f2fd; border: 1px solid #bbdefb; padding: 10px; border-radius: 5px; margin-top: 15px; }
+        .music-box { background-color: #f3e5f5; padding: 10px; border-radius: 5px; margin-top: 10px; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌲 대상자별 맞춤숲 해설 프로그램</h1>
+    
+    <div class="selection-box">
+        <select id="target">
+            <option value="">-- 대상자 선택 --</option>
+            <option value="유아">유아 (놀이·정서)</option>
+            <option value="초등">초등학생 (탐구·모험)</option>
+            <option value="사회초년생">사회초년생 (힐링·재충전)</option>
+        </select>
+
+        <select id="season">
+            <option value="">-- 계절 선택 --</option>
+            <option value="봄">봄</option>
+            <option value="여름">여름</option>
+            <option value="가을">가을</option>
+            <option value="겨울">겨울</option>
+        </select>
+
+        <button onclick="generateProgram()">프로그램 보기</button>
+    </div>
+
+    <div id="result"></div>
+</div>
+
+<script>
+const programData = {
+    "유아": {
+        "특성": "오감 중심, 짧은 집중력, 율동과 놀이 선호",
+        "봄": {
+            "제목": "아기 싹과 인사해요",
+            "장소": "평탄한 꽃길",
+            "안전": "① 꽃 꺾지 않기 ② 벌 조심하기 ③ 선생님 시야 안에서 움직이기",
+            "도입": "안전 약속 → '봄나들이' 노래 부르며 숲 입장",
+            "전개": "활동시간: 40분 / 준비물: 루페, 손수건<br>1. 꽃눈 관찰하기 2. 꽃잎 색깔 찾기 놀이 3. 나비 흉내 내기",
+            "마무리": "나무 안아주기 → 소감 나누기",
+            "음악": "동요 '나비야'",
+            "율동": "꽃이 피는 동작 흉내 내기",
+            "우천": "실내 꽃잎 압화 책갈피 만들기 (준비물: 말린 꽃, 코팅지)"
+        },
+        "여름": {
+            "제목": "말랑말랑 물방울 여행",
+            "장소": "계곡 근처 나무 그늘",
+            "안전": "① 물가 혼자 가지 않기 ② 벌레 손으로 잡지 않기 ③ 물 자주 마시기",
+            "도입": "안전 약속 → 시원한 숲 바람과 인사",
+            "전개": "활동시간: 40분 / 준비물: 분무기, 나뭇잎<br>1. 나뭇잎에 물 뿌려 관찰 2. 물방울 굴리기 놀이",
+            "마무리": "시원한 나무 안아주기",
+            "음악": "동요 '시냇물'",
+            "율동": "'퐁당퐁당' 노래에 맞춰 폴짝 뛰기",
+            "우천": "천연 이끼 액자 만들기 (준비물: 스칸디아모스, 목공풀)"
+        },
+        "가을": {
+            "제목": "알록달록 낙엽 잔치",
+            "장소": "낙엽이 쌓인 숲길",
+            "안전": "① 낙엽 던질 때 눈 조심 ② 나뭇가지로 장난치지 않기",
+            "도입": "안전 약속 → 바스락 낙엽 소리 듣기",
+            "전개": "활동시간: 40분 / 준비물: 채집 봉투<br>1. 낙엽 왕관 만들기 2. 도토리 굴리기",
+            "마무리": "숲에게 고맙다고 인사하기",
+            "음악": "동요 '가을 길'",
+            "율동": "낙엽이 떨어지는 모습 표현하기",
+            "우천": "낙엽 사자 얼굴 꾸미기 (준비물: 종이접시, 풀, 색종이)"
+        },
+        "겨울": {
+            "제목": "겨울나무야 잘 자니?",
+            "장소": "햇볕이 잘 드는 숲터",
+            "안전": "① 빙판길 미끄럼 주의 ② 장갑 꼭 끼기",
+            "도입": "안전 약속 → 겨울잠 자는 친구들 깨우지 않기",
+            "전개": "활동시간: 30분 / 준비물: 돋보기<br>1. 겨울눈 관찰 2. 나무 옷 입혀주기(털실 감기)",
+            "마무리": "따뜻한 차 마시며 이야기",
+            "음악": "동요 '겨울바람'",
+            "율동": "몸을 웅크렸다 펴는 기상 체조",
+            "우천": "솔방울 트리 만들기 (준비물: 솔방울, 물감, 비즈)"
+        }
+    },
+    "초등": {
+        "특성": "탐구심 왕성, 협동 활동, 생태 지식 관심",
+        "봄": {
+            "제목": "숲속 생명 탄생 탐험대",
+            "장소": "생태 관찰로",
+            "안전": "① 정해진 길로만 가기 ② 생물 채집 금지",
+            "도입": "안전 수칙 미션카드 확인 → 탐험대 선서",
+            "전개": "활동시간: 60분 / 준비물: 관찰일지, 필기도구<br>1. 식물 이름 유래 찾기 2. 곤충 호텔 관찰",
+            "마무리": "오늘의 발견 공유하기",
+            "음악": "요한 슈트라우스 '봄의 소리'",
+            "율동": "씨앗이 자라 나무가 되는 과정 표현",
+            "우천": "씨앗 폭탄 만들기 (준비물: 찰흙, 배양토, 씨앗)"
+        },
+        "여름": {
+            "제목": "여름 숲 생태 탐험대",
+            "장소": "생물 다양성 관찰로",
+            "안전": "① 탐방로 준수 ② 벌 발견 시 자세 낮추기",
+            "도입": "안전 수칙 확인 → 탐험대 발대식",
+            "전개": "활동시간: 60분 / 준비물: 소리 지도 용지<br>1. 숲속 소리 지도 만들기 2. 그늘 온도 비교 실험",
+            "마무리": "환경 지킴이 약속 쓰기",
+            "음악": "생상스 '동물의 사육제'",
+            "율동": "매미 울음소리 박자에 맞춰 손뼉 치기",
+            "우천": "재활용품 곤충 만들기 (준비물: 폐지, 병뚜껑)"
+        },
+        "가을": {
+            "제목": "씨앗의 여행 전략",
+            "장소": "열매가 많은 숲",
+            "안전": "① 모르는 열매 먹지 않기 ② 가시 식물 주의",
+            "도입": "안전 안내 → 씨앗 주머니 관찰",
+            "전개": "활동시간: 60분 / 준비물: 돋보기, 테이프<br>1. 씨앗 이동 방식 탐구 2. 단풍잎 화학 반응 설명",
+            "마무리": "숲의 순환 정리하기",
+            "음악": "비발디 '사계' 중 가을",
+            "율동": "바람에 날리는 씨앗 춤",
+            "우천": "나뭇잎 맥 관찰 및 탁본 (준비물: 한지, 먹물)"
+        },
+        "겨울": {
+            "제목": "숲속의 겨울나기 전략",
+            "장소": "겨울 숲 전체",
+            "안전": "① 저체온증 예방(방한) ② 나뭇가지 꺾지 않기",
+            "도입": "안전 확인 → 겨울 숲의 고요함 느끼기",
+            "전개": "활동시간: 50분 / 준비물: 야생동물 발자국 도감<br>1. 동물 발자국 추적 2. 나무의 부동액 원리 학습",
+            "마무리": "겨울 숲에게 응원 메시지",
+            "음악": "차이코프스키 '호두까기 인형'",
+            "율동": "추위를 이기는 펭귄 걸음",
+            "우천": "새 먹이통 만들기 (준비물: 우유갑, 곡물, 끈)"
+        }
+    },
+    "사회초년생": {
+        "특성": "스트레스 해소, 정서적 위로, 숲멍 선호",
+        "봄": {
+            "제목": "새로운 시작, 숲의 응원",
+            "장소": "탁 트인 전망대 숲길",
+            "안전": "① 무리한 산행 금지 ② 진드기 기피제 사용",
+            "도입": "안전 안내 → 심호흡으로 긴장 풀기",
+            "전개": "활동시간: 80분 / 준비물: 요가 매트<br>1. 숲속 스트레칭 2. 새소리 명상",
+            "마무리": "나에게 보내는 격려 한마디",
+            "음악": "이루마 'Kiss the Rain'",
+            "율동": "없음 (정적 명상 위주)",
+            "우천": "나만의 반려식물 심기 (준비물: 화분, 다육이)"
+        },
+        "여름": {
+            "제목": "숲에서 충전하는 나의 쉼표",
+            "장소": "편백나무 숲 쉼터",
+            "안전": "① 수분 섭취 ② 경사로 미끄럼 주의",
+            "도입": "안전 안내 → 숲 호흡법 배우기",
+            "전개": "활동시간: 80분 / 준비물: 손수건<br>1. 맨발 걷기 2. 나무에 기대어 숲멍 하기",
+            "마무리": "나에게 쓰는 응원 엽서",
+            "음악": "루도비코 에이나우디 'Nuvole Bianche'",
+            "율동": "없음 (정적 명상 위주)",
+            "우천": "아로마 향낭 만들기 (준비물: 편백 큐브, 오일)"
+        },
+        "가을": {
+            "제목": "비움과 채움의 숲",
+            "장소": "단풍이 아름다운 평지",
+            "안전": "① 뱀 주의 ② 일교차 대비 겉옷 준비",
+            "도입": "안전 안내 → 걷기 명상 시작",
+            "전개": "활동시간: 80분 / 준비물: 따뜻한 차<br>1. 낙엽 밟으며 생각 정리 2. 숲속 차담(茶談)",
+            "마무리": "올해의 수확 되돌아보기",
+            "음악": "조지 윈스턴 'Thanksgiving'",
+            "율동": "없음 (정적 명상 위주)",
+            "우천": "숲 향기 디퓨저 만들기 (준비물: 에탄올, 우드스틱)"
+        },
+        "겨울": {
+            "제목": "침묵의 숲, 내면의 소리",
+            "장소": "조용한 숲속 오두막 주변",
+            "안전": "① 아이젠 착용 권장 ② 보온병 지참",
+            "도입": "안전 확인 → 겨울 숲의 침묵 감상",
+            "전개": "활동시간: 70분 / 준비물: 담요, 핫팩<br>1. 눈 위 걷기 명상 2. 새해 다짐 적기",
+            "마무리": "따뜻한 포옹(Self-hug)",
+            "음악": "에릭 사티 'Gymnopédie No.1'",
+            "율동": "없음 (정적 명상 위주)",
+            "우천": "우드 버닝 공예 (준비물: 인하인두기, 나무판)"
+        }
+    }
+};
+
+function generateProgram() {
+    const target = document.getElementById('target').value;
+    const season = document.getElementById('season').value;
+    const resultDiv = document.getElementById('result');
+
+    if (!target || !season) {
+        alert("대상자와 계절을 모두 선택해주세요!");
+        return;
+    }
+
+    const data = programData[target][season];
+    const targetInfo = programData[target]["특성"];
+
+    resultDiv.style.display = "block";
+    resultDiv.innerHTML = `
+        <h2>[${target} — 「${data.제목}」]</h2>
+        <p><strong>💡 대상자 특성:</strong> ${targetInfo}</p>
+        
+        <div class="safety">
+            ⚠️ 안전규칙 (최우선):<br>${data.안전}
+        </div>
+
+        <span class="category">📍 해설 장소</span> ${data.장소}
+        <span class="category">🏁 도입</span> ${data.도입}
+        <span class="category">🏃 전개</span> ${data.전개}
+        <span class="category">✨ 마무리</span> ${data.마무리}
+        
+        <div class="music-box">
+            🎵 추천 음악: ${data.음악}<br>
+            💃 추천 율동: ${data.율동}
+        </div>
+
+        <div class="alternative">
+            ☔ 우천 시 대체 프로그램: ${data.우천}
+        </div>
+    `;
+}
+</script>
+
+</body>
+</html>
