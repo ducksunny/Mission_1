@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>컬러풀 숲 해설 프로그램 가이드</title>
+    <style>
+        :root {
+            --step1-color: #4fc3f7; /* Sky Blue */
+            --step2-color: #ffb74d; /* Orange */
+            --step3-color: #81c784; /* Leaf Green */
+            --accent-pink: #f06292; /* Pink */
+            --safety-red: #ff5252;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            color: #444;
+        }
+
+        .container {
+            max-width: 850px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d5a27;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .step-container {
+            margin-bottom: 25px;
+            padding: 25px;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            border-left: 10px solid #eee;
+        }
+
+        #step1 { border-left-color: var(--step1-color); }
+        #step2 { border-left-color: var(--step2-color); }
+        #step3 { border-left-color: var(--step3-color); }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .step-title span {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            color: white;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+            font-size: 0.9rem;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        /* 단계별 버튼 활성화 색상 */
+        #step1 .btn.active { background: var(--step1-color); color: white; box-shadow: 0 4px 10px rgba(79, 195, 247, 0.4); }
+        #step2 .btn.active { background: var(--step2-color); color: white; box-shadow: 0 4px 10px rgba(255, 183, 77, 0.4); }
+        #step3 .btn.active { background: var(--step3-color); color: white; box-shadow: 0 4px 10px rgba(129, 199, 132, 0.4); }
+
+        .btn:hover:not(.active) { transform: translateY(-2px); background: #e0e0e0; }
+
+        #result-area {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            border-radius: 25px;
+            background: #fff;
+            border: 2px dashed var(--accent-pink);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .safety-tag {
+            background: var(--safety-red);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .history-card {
+            background: #fce4ec;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-right: 5px solid var(--accent-pink);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            padding: 15px;
+            border-radius: 12px;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+        }
+
+        footer { text-align: center; margin-top: 40px; color: #888; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌈 컬러풀 숲 체험 기획기</h1>
+
+    <div class="step-container" id="step1">
+        <div class="step-title"><span style="background:var(--step1-color)">1</span> 누구와 함께 가시나요?</div>
+        <div class="btn-group">
+            <button class="btn" onclick="selectStep(1, 'toddler', this)">👶 유아</button>
+            <button class="btn" onclick="selectStep(1, 'elementary', this)">🎒 초등학생</button>
+            <button class="btn" onclick="selectStep(1, 'adult', this)">💼 사회초년생</button>
+        </div>
+    </div>
+
+    <div class="step-container" id="step2" style="display:none">
+        <div class="step-title"><span style="background:var(--step2-color)">2</span> 가고 싶은 장소는?</div>
+        <div class="btn-group">
+            <button class="btn" onclick="selectStep(2, 'seoul', this)">🌳 서울숲</button>
+            <button class="btn" onclick="selectStep(2, 'palace', this)">🏯 창경궁</button>
+            <button class="btn" onclick="selectStep(2, 'maeheon', this)">🍂 매헌시민의숲</button>
+        </div>
+    </div>
+
+    <div class="step-container" id="step3" style="display:none">
+        <div class="step-title"><span style="background:var(--step3-color)">3</span> 지금은 어떤 계절인가요?</div>
+        <div class="btn-group">
+            <button class="btn" onclick="selectStep(3, '봄', this)">🌸 봄</button>
+            <button class="btn" onclick="selectStep(3, '여름', this)">☀️ 여름</button>
+            <button class="btn" onclick="selectStep(3, '가을', this)">🍁 가을</button>
+            <button class="btn" onclick="selectStep(3, '겨울', this)">❄️ 겨울</button>
+        </div>
+    </div>
+
+    <div id="result-area"></div>
+
+    <footer>✨ 당신의 특별한 숲 나들이를 응원합니다!</footer>
+</div>
+
+<script>
+    let choices = { target: '', location: '', season: '' };
+
+    const data = {
+        locations: {
+            seoul: { name: "서울숲", history: "조선시대 왕의 사냥터에서 상수도 수원지를 거쳐, 시민의 손으로 일궈낸 도심 속 거대한 초록 섬입니다." },
+            palace: { name: "창경궁", history: "왕실의 대비들을 위해 지어진 궁궐로, 아픈 역사를 딛고 복원된 아름다운 춘당지와 대온실을 품고 있습니다." },
+            maeheon: { name: "매헌시민의숲", history: "윤봉길 의사의 숭고한 정신이 깃든 곳이자, 우리나라 최초로 '숲' 테마를 도입한 울창한 휴식처입니다." }
+        },
+        programs: {
+            toddler: { title: "숲속 요정 탐험대", 봄: "꽃잎 왕관 만들기", 여름: "물방울 소리 듣기", 가을: "알록달록 잎사귀 찾기", 겨울: "나무야 따뜻해져라(안아주기)", music: "동요 '숲속을 걸어요'", move: "나비처럼 팔랑팔랑" },
+            elementary: { title: "그린 히어로 탐사단", 봄: "식물 지도 그리기", 여름: "곤충 아파트 관찰", 가을: "씨앗의 여행 조사", 겨울: "겨울눈 관찰 일기", music: "경쾌한 행진곡", move: "탐험대장 걸음걸이" },
+            adult: { title: "숲에서 즐기는 리프레시", 봄: "초록빛 명상", 여름: "숲속 ASMR 힐링", 가을: "역사 산책과 사색", 겨울: "따뜻한 차와 회고", music: "비발디 '사계'", move: "전신 이완 스트레칭" }
+        }
+    };
+
+    function selectStep(step, value, btn) {
+        const parent = btn.parentElement;
+        Array.from(parent.children).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        if(step === 1) {
+            choices.target = value;
+            document.getElementById('step2').style.display = 'block';
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('result-area').style.display = 'none';
+        } else if(step === 2) {
+            choices.location = value;
+            document.getElementById('step3').style.display = 'block';
+            document.getElementById('result-area').style.display = 'none';
+        } else {
+            choices.season = value;
+            showResult();
+        }
+    }
+
+    function showResult() {
+        const loc = data.locations[choices.location];
+        const prog = data.programs[choices.target];
+        const res = document.getElementById('result-area');
+
+        res.innerHTML = `
+            <div class="safety-tag">⚠️ 안전 가이드</div>
+            <p style="margin-top:5px; font-size:0.9rem;">활동 전 스트레칭 필수! 해설사의 안내에 따라 지정된 경로로만 이동하세요.</p>
+            
+            <div class="history-card">
+                <strong style="color:var(--accent-pink)">🏛️ [${loc.name}] 이야기</strong><br>
+                ${loc.history}
+            </div>
+
+            <h2 style="color:#2d5a27; margin-bottom:10px;">${choices.season}에 떠나는 ${prog.title}</h2>
+            <p><strong>오늘의 활동:</strong> <span style="color:var(--accent-pink); font-weight:bold;">${prog[choices.season]}</span></p>
+
+            <div class="info-grid">
+                <div class="info-box"><strong>🎵 추천 음악</strong><br>${prog.music}</div>
+                <div class="info-box"><strong>🏃 추천 동작</strong><br>${prog.move}</div>
+            </div>
+        `;
+        res.style.display = 'block';
+        window.scrollTo({ top: res.offsetTop - 20, behavior: 'smooth' });
+    }
+</script>
+</body>
+</html>
