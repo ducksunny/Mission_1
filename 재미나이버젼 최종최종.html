@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맞춤형 숲 해설 프로그램 기획기</title>
+    <style>
+        :root {
+            --forest-green: #2d5a27;
+            --leaf-green: #aed581;
+            --bg-color: #f0f4f0;
+            --accent-orange: #ff9800;
+            --danger-red: #e53935;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--forest-green);
+            margin-bottom: 40px;
+        }
+
+        .step-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 15px;
+            background: #fafafa;
+        }
+
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--forest-green);
+            display: flex;
+            align-items: center;
+        }
+
+        .step-title span {
+            background: var(--forest-green);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: 2px solid var(--leaf-green);
+            background: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: var(--leaf-green);
+        }
+
+        .btn.active {
+            background: var(--forest-green);
+            color: white;
+            border-color: var(--forest-green);
+        }
+
+        #step2, #step3, #result-area {
+            display: none; /* 초기에는 숨김 */
+        }
+
+        /* 결과 스타일 */
+        .result-card {
+            margin-top: 40px;
+            border-top: 3px solid var(--forest-green);
+            padding-top: 20px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .safety-box {
+            background: #fff5f5;
+            border: 2px solid var(--danger-red);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .history-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .program-section {
+            margin-bottom: 20px;
+        }
+
+        .section-h {
+            color: var(--forest-green);
+            border-left: 4px solid var(--forest-green);
+            padding-left: 10px;
+            margin: 15px 0 10px 0;
+        }
+
+        .footer-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌲 숲 해설 프로그램 설계</h1>
+
+    <!-- 1단계: 대상자 선택 -->
+    <div class="step-container" id="step1">
+        <div class="step-title"><span>1</span> 대상자를 선택하세요</div>
+        <div class="button-group">
+            <button class="btn" onclick="selectTarget(this, 'toddler')">유아</button>
+            <button class="btn" onclick="selectTarget(this, 'elementary')">초등학생</button>
+            <button class="btn" onclick="selectTarget(this, 'adult')">사회초년생</button>
+        </div>
+    </div>
+
+    <!-- 2단계: 장소 선택 -->
+    <div class="step-container" id="step2">
+        <div class="step-title"><span>2</span> 장소를 선택하세요</div>
+        <div class="button-group">
+            <button class="btn" onclick="selectLocation(this, 'seoul')">서울숲</button>
+            <button class="btn" onclick="selectLocation(this, 'palace')">창경궁</button>
+            <button class="btn" onclick="selectLocation(this, 'maeheon')">매헌시민의숲</button>
+        </div>
+    </div>
+
+    <!-- 3단계: 계절 선택 -->
+    <div class="step-container" id="step3">
+        <div class="step-title"><span>3</span> 계절을 선택하세요</div>
+        <div class="button-group">
+            <button class="btn" onclick="selectSeason(this, '봄')">봄</button>
+            <button class="btn" onclick="selectSeason(this, '여름')">여름</button>
+            <button class="btn" onclick="selectSeason(this, '가을')">가을</button>
+            <button class="btn" onclick="selectSeason(this, '겨울')">겨울</button>
+        </div>
+    </div>
+
+    <!-- 결과 출력 영역 -->
+    <div id="result-area"></div>
+</div>
+
+<script>
+    let selectedData = {
+        target: '',
+        location: '',
+        season: ''
+    };
+
+    const db = {
+        locations: {
+            seoul: {
+                name: "서울숲",
+                history: "조선시대 임금의 사냥터였으며, 1908년 우리나라 최초의 상수도 수원지였습니다. 2005년 시민들의 참여로 조성된 도심 속 생태공원으로, 거울연못과 사슴 방사장이 유명합니다."
+            },
+            palace: {
+                name: "창경궁",
+                history: "조선 성종 때 세워진 궁궐로, 일제강점기 동물원(창경원)으로 변모했던 아픈 역사가 있습니다. 현재는 복원되어 춘당지와 우리나라 최초의 서양식 온실인 대온실을 품은 생태 역사 공간입니다."
+            },
+            maeheon: {
+                name: "매헌시민의숲",
+                history: "1986년 아시안 게임과 88 올림픽을 앞두고 조성된 우리나라 최초의 '숲' 개념 공원입니다. 매헌 윤봉길 의사의 기념관이 있으며, 울창한 메타세쿼이아 길과 양재천이 어우러진 힐링 명소입니다."
+            }
+        },
+        programs: {
+            toddler: {
+                title: "꼬마 숲 탐험대",
+                char: "오감 자극과 놀이 중심 활동",
+                봄: "꽃향기 실어 나르기", 여름: "매미 허물 찾기", 가을: "낙엽 이불 덮어주기", 겨울: "나무 옷 입혀주기(그래피티 니팅)",
+                music: "숲속을 걸어요", movement: "아기 새 날갯짓"
+            },
+            elementary: {
+                title: "지구 수호대 생태 탐사",
+                char: "관찰 기록 및 역사적 맥락 이해",
+                봄: "궁궐/숲의 꽃 지도 만들기", 여름: "수생식물 현미경 관찰", 가을: "열매의 이동 전략 탐구", 겨울: "겨울눈의 비밀 찾기",
+                music: "우리나라 민요", movement: "나무 나이테 몸으로 표현하기"
+            },
+            adult: {
+                title: "숲에서 찾는 쉼표",
+                char: "스트레스 해소 및 자아 성찰",
+                봄: "초록빛 명상 걷기", 여름: "숲속 싱잉볼 테라피", 가을: "역사 속 인물과 대화하기", 겨울: "따뜻한 차와 함께하는 회고",
+                music: "클래식 (비발디 사계)", movement: "거북목 예방 스트레칭"
+            }
+        }
+    };
+
+    function selectTarget(btn, val) {
+        selectedData.target = val;
+        toggleActive(btn, 'step1');
+        document.getElementById('step2').style.display = 'block';
+        resetBelow('step2');
+    }
+
+    function selectLocation(btn, val) {
+        selectedData.location = val;
+        toggleActive(btn, 'step2');
+        document.getElementById('step3').style.display = 'block';
+        resetBelow('step3');
+    }
+
+    function selectSeason(btn, val) {
+        selectedData.season = val;
+        toggleActive(btn, 'step3');
+        showResult();
+    }
+
+    function toggleActive(btn, stepId) {
+        const buttons = document.querySelectorAll(`#${stepId} .btn`);
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function resetBelow(stepId) {
+        if(stepId === 'step2') {
+            document.getElementById('step3').style.display = 'none';
+            document.querySelectorAll('#step3 .btn').forEach(b => b.classList.remove('active'));
+        }
+        document.getElementById('result-area').style.display = 'none';
+    }
+
+    function showResult() {
+        const loc = db.locations[selectedData.location];
+        const prog = db.programs[selectedData.target];
+        const season = selectedData.season;
+        
+        const resultArea = document.getElementById('result-area');
+        resultArea.innerHTML = `
+            <div class="result-card">
+                <div class="safety-box">
+                    <strong>⚠️ 안전 제일! 필수 수칙</strong>
+                    <ul>
+                        <li>지정된 탐방로를 절대 벗어나지 마세요.</li>
+                        <li>벌, 뱀 등 위험 동식물을 주의하고 자극하지 마세요.</li>
+                        <li>활동 전 충분한 준비운동으로 근육을 풀어주세요.</li>
+                    </ul>
+                </div>
+
+                <div class="history-box">
+                    <strong>🏛️ [${loc.name}]의 역사와 배경</strong><br>
+                    ${loc.history}
+                </div>
+
+                <h2 style="color:var(--forest-green)">[${season}] ${prog.title} - ${loc.name}</h2>
+                <p><strong>대상 특성:</strong> ${prog.char}</p>
+
+                <div class="program-section">
+                    <div class="section-h">1. 도입 (15분)</div>
+                    <ul>
+                        <li>인사 및 안전 교육</li>
+                        <li>${loc.name}의 역사 이야기 들려주기</li>
+                    </ul>
+
+                    <div class="section-h">2. 전개 (60분)</div>
+                    <ul>
+                        <li><strong>핵심 활동:</strong> ${prog[season]}</li>
+                        <li><strong>준비물:</strong> 관찰 도구, 돗자리, 활동지, 개인 물병</li>
+                        <li><strong>진행:</strong> 숲 산책 → 주제 활동 → 자연물 관찰</li>
+                    </ul>
+
+                    <div class="section-h">3. 마무리 (15분)</div>
+                    <ul>
+                        <li>느낌 나누기 및 주변 정리</li>
+                        <li>기념사진 촬영 및 작별 인사</li>
+                    </ul>
+                </div>
+
+                <div class="footer-info">
+                    <div class="info-item"><strong>🎵 추천 음악:</strong> ${prog.music}</div>
+                    <div class="info-item"><strong>🏃 추천 동작:</strong> ${prog.movement}</div>
+                    <div class="info-item" style="grid-column: span 2;"><strong>☔ 우천 시:</strong> 실내 시청각 교육 및 자연물 만들기 체험으로 대체</div>
+                </div>
+            </div>
+        `;
+        resultArea.style.display = 'block';
+        window.scrollTo({ top: resultArea.offsetTop - 20, behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
